@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origen - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],  
+                    },
+                    colors: {
+                        customYellow: '#FFB72C', 
+                        customGrey: "#333",
+                        customGreyOne: '#808080'
+                    },
+                    spacing: {
+                        '540': "33.75rem",
+                        'py-46': '2.875rem',
+                        '36': '2.25rem',
+                        '14': '0.875rem',
+                        '20': '1.25rem',
+                        '150': '9.275rem',
+                        'md-gap': '5rem'
+                    },
+                    borderRadius: {
+                        'custom-xl': "2.5rem",
+                    },
+                    maxWidth: {
+                        '540': '33.75rem',
+                        '860': "53.75rem",
+                        '236': '14.75rem'     
+                    },
+                    backgroundImage: {
+                        'custom-gradient': 'linear-gradient(90deg, #006CD2 0%, #00A3FF 94.24%)',
+                        'cus-white': 'F7F7F7'
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-cus-white lg:h-screen flex items-center justify-center">
+    <div class="flex flex-col md:flex-row items-center justify-center w-full gap-7 py-10 lg:py-0 lg:gap-md-gap px-20 md:pr-10">
+        <div class="max-w-860 w-full flex flex-row items-center justify-center md:p-10">
+            <div>
+                <img src="/static/images/origen-logo.png" alt="Origen Logo" class="w-full h-100">
+            </div>
+        </div>
+
+        <div class="w-full md:max-w-540 bg-custom-gradient text-white py-20 px-7 md:p-10 rounded-custom-xl">
+            <h2 class="text-lg md:text-2xl mb-1">Welcome to <span class="text-customYellow font-extrabold">Origen LLM Model</span>
+            </h2>
+            <h1 class="text-3xl font-bold mb-10 md:mb-12">Sign in</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mt-4 p-3 bg-{{ 'red' if category == 'danger' else 'green' }}-500 text-white text-center rounded">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
+  
+            <form action="{{ url_for('signin') }}" method="POST" class="mt-6">
+                <div class="mb-20 md:mb-9">
+                    <label class="block text-base font-normal mb-4">Enter email address</label>
+                    <input type="email" name="email" placeholder="Email address" class="w-full py-4 px-5 rounded-lg text-sm text-black placeholder:text-customGreyOne outline-none" required>
+                </div>
+
+                <div class="mb-20 md:mb-9">
+                    <label class="block text-base font-normal mb-4">Enter your password</label>
+                    <input type="password" name="password" placeholder="Password" class="w-full py-4 px-5 rounded-lg text-sm text-black placeholder:text-customGreyOne outline-none" required>
+                </div>
+
+                <div class="flex flex-col-reverse md:flex-row items-center justify-between pt-7">
+                    <p class="text-sm flex gap-1 md:gap-0 mt-7 md:mt-0 md:flex-col font-normal">Don’t have an Account? <a href="{{ url_for('signup') }}"
+                            class="text-white font-bold  underline">Sign up</a></p>
+                    <button type="submit"
+                        class="bg-customYellow md:max-w-236 w-full text-customGrey py-4 px-6 text-base rounded-lg font-medium ">Sign In</button>
+                </div>
+
+                <div class="flex items-center justify-between mt-6 pt-7 md:pt-0 pb-7 md:pb-0">
+                    <button class="flex h-[55px] cursor-pointer items-center text-sm md:text-base justify-start py-4 md:py-14 w-full gap-3 md:gap-5 bg-white text-black pl-4 md:pl-8 rounded-lg shadow">
+                        <img src="/static/images/google-icon.png" alt="Google" class="w-5 h-5 md:mr-2">
+                        Sign In with Google
+                    </button>
+
+                    <div class="flex space-x-3 md:space-x-4 ml-[14px] md:ml-5">
+                        <div class="flex items-center cursor-pointer justify-center bg-white h-[55px] w-[40px] md:w-[60px]  rounded-[9px]">
+                            <img src="/static/images/facebook-icon.png" alt="Facebook" class="">
+                        </div>
+                        <div class="flex items-center justify-center cursor-pointer  h-[55px] w-[40px] md:w-[60px]  bg-white  rounded-[9px]">
+                            <img src="/static/images/camera-icon.png" alt="Camera" class="">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

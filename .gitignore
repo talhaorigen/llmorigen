@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.venv/
+ENV/
+env/
+bin/
+include/
+lib/
+lib64/
+pyvenv.cfg
+
+# Flask / Python specific logs
+instance/
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# SQLite database
+*.sqlite3
+*.db
+db.sqlite3
+migrations/
+
+# Static assets cache
+staticfiles/
+node_modules/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Pipenv & Poetry
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Coverage reports
+.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Pytest cache
+.pytest_cache/
