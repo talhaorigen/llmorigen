@@ -139,7 +139,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from chatbot import ChatBot
+from chatbot import APPCFG, ChatBot
 from upload_file import UploadFile
 from werkzeug.utils import secure_filename
 
@@ -237,12 +237,13 @@ def chatbot_response():
 
     data = request.json
     user_input = data.get("message", "")
-    data_type = data.get("data_type", "Upload doc: Process for RAG")  # Default data type
+    data_type = data.get("data_type", "Process for RAG")  # Default data type
+    print("Data type:" , data_type)
     temperature = float(data.get("temperature", 0.0))  # Default temperature
 
     if not user_input:
         return jsonify({"error": "Message cannot be empty"}), 400
-
+    
     chatbot_history = []  # Placeholder for user-specific history
     _, updated_chat, references = ChatBot.respond(chatbot_history, user_input, data_type, temperature)
 
@@ -266,7 +267,7 @@ def upload_file():
     file.save(file_path)
 
     chatbot_history = []  # Placeholder for user-specific history
-    _, updated_chat = UploadFile.process_uploaded_files([file_path], chatbot_history, "Upload doc: Process for RAG")
+    _, updated_chat = UploadFile.process_uploaded_files([file_path], chatbot_history, "Give Full Summary")
 
     return jsonify({"message": "File uploaded successfully!", "chatbot_response": updated_chat[-1][1]})
 
@@ -274,7 +275,7 @@ def upload_file():
 @app.route('/options', methods=['GET'])
 def get_options():
     return jsonify({
-        "options": ["Upload doc: Process for RAG", "Upload doc: Give Full summary"]
+        "options": ["Process for RAG", "Give Full summary"]
     })
 
 if __name__ == '__main__':

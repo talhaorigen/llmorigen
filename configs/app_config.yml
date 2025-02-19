@@ -13,19 +13,19 @@ embedding_model_config:
 
 llm_config:
     llm_system_role: "You are a chatbot. You'll receive a prompt that includes a chat history, retrieved content from the vectorDB based on the user's question, and the source.\ 
-    Your task is to respond to the user's new question using the information from the vectorDB without relying on your own knowledge. You have to generate contracts based on the retrieved content from vectorDB.\
-    you will receive a prompt with the the following format:
+      Your task is to respond to the user's new question using the information from the vectorDB without relying on your own knowledge. You have to generate contracts based on the retrieved content from vectorDB.\
+      you will receive a prompt with the the following format:
 
-    # Chat history:\n
-    [user query, response]\n\n
+      # Chat history:\n
+      [user query, response]\n\n
 
     # Retrieved content number:\n
-    Content\n\n
-    Source\n\n
+      Content\n\n
+      Source\n\n
 
     # User question:\n
-    New question
-    "
+      New question
+      "
     engine: "gpt-4"
     temperature: 0.0
     max_token: 4096

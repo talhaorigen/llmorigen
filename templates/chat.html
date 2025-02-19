@@ -1,357 +1,640 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Origen LLM Chatbot</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
-                    },
-                    colors: {
-                        customYellow: '#FFB72C',
-                        customGrey: "#333",
-                        customGreyOne: '#808080',
-                        customGreyTwo: "#6C6C6C",
-                        customGreyThree: "#8A8A8A",
-                        customGreyFour: 'rgba(255, 255, 255, 0.60)',
-                    },
-                    spacing: {
-                        '540': "33.75rem",
-                        'py-46': '2.875rem',
-                        '36': '2.25rem',
-                        '14': '0.875rem',
-                        '20': '1.25rem',
-                        '150': '9.275rem',
-                        'md-gap': '5rem'
-                    },
-                    borderRadius: {
-                        'custom-xl': "2.5rem",
-                        'custom-lg': '0.938rem'
-                    },
-                    maxWidth: {
-                        '540': '33.75rem',
-                        '860': "53.75rem",
-                        '236': '14.75rem'
-                    },
-                    backgroundImage: {
-                        'custom-gradient': 'linear-gradient(90deg, #006CD2 0%, #00A3FF 94.24%)',
-                        'cus-white': 'F7F7F7'
-                    },
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Nunito", "sans-serif"],
+            },
+            colors: {
+              customYellow: "#FFB72C",
+              customGrey: "#333",
+              customGreyOne: "#808080",
+              customGreyTwo: "#6C6C6C",
+              customGreyThree: "#8A8A8A",
+              customGreyFour: "rgba(255, 255, 255, 0.60)",
+            },
+            spacing: {
+              540: "33.75rem",
+              "py-46": "2.875rem",
+              36: "2.25rem",
+              14: "0.875rem",
+              20: "1.25rem",
+              150: "9.275rem",
+              "md-gap": "5rem",
+            },
+            borderRadius: {
+              "custom-xl": "2.5rem",
+              "custom-lg": "0.938rem",
+            },
+            maxWidth: {
+              540: "33.75rem",
+              860: "53.75rem",
+              236: "14.75rem",
+            },
+            backgroundImage: {
+              "custom-gradient":
+                "linear-gradient(90deg, #006CD2 0%, #00A3FF 94.24%)",
+              "cus-white": "F7F7F7",
+            },
+          },
+        },
+      };
     </script>
     <style>
-        body * {
-            font-family: Nunito !important;
-        }
+      body * {
+        font-family: Nunito !important;
+      }
 
-        .text-gradient {
-            background: linear-gradient(90deg, #006CD2 0%, #00A3FF 94.24%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+      .text-gradient {
+        background: linear-gradient(90deg, #006cd2 0%, #00a3ff 94.24%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-        #creativity-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 0.5rem;
-            border-radius: 1rem;
-            background: linear-gradient(90deg, #006CD2 0%, #00A3FF 0%, #C0DBFB 0%);
-            outline: none;
-            cursor: pointer;
-            transition: background 0.3s ease-in-out;
-            height: 13px;
-            margin-bottom: 4px;
-        }
+      #creativity-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 0.5rem;
+        border-radius: 1rem;
+        background: linear-gradient(90deg, #006cd2 0%, #00a3ff 0%, #c0dbfb 0%);
+        outline: none;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+        height: 13px;
+        margin-bottom: 4px;
+      }
 
-        #creativity-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7" fill="%23FFB72C" stroke="white" stroke-width="8"/></svg>') no-repeat center;
-            background-size: contain;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 0 0 7px rgba(34, 128, 239, 0.2);
-            border-radius: 50%;
-        }
+      #creativity-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7" fill="%23FFB72C" stroke="white" stroke-width="8"/></svg>')
+          no-repeat center;
+        background-size: contain;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 0 0 7px rgba(34, 128, 239, 0.2);
+        border-radius: 50%;
+      }
 
-        #creativity-slider::-moz-range-thumb {
-            width: 22px;
-            height: 22px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7" fill="%23FFB72C" stroke="white" stroke-width="8"/></svg>') no-repeat center;
-            background-size: contain;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 0 0 7px rgba(34, 128, 239, 0.2);
-            border-radius: 50%;
-        }
+      #creativity-slider::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7" fill="%23FFB72C" stroke="white" stroke-width="8"/></svg>')
+          no-repeat center;
+        background-size: contain;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 0 0 7px rgba(34, 128, 239, 0.2);
+        border-radius: 50%;
+      }
     </style>
-</head>
+  </head>
 
-<body class="min-h-screen md:h-screen flex">
+  <body class="min-h-screen md:h-screen flex">
     <aside
-        class="hidden md:flex md:max-w-[300px]  lg:max-w-[450px] w-full bg-custom-gradient text-white p-7 flex-col justify-between">
-        <div>
-            <img src="/static/images/sidebar-origen-logo.png" alt="Origen Logo" class="">
-            <button
-                class="bg-customYellow flex justify-between items-center text-customGrey p-20 rounded-custom-lg mx-2 w-full mt-12">Begin
-                a New Chat
-                <img src="/static/images/plus-icon.png" />
-            </button>
-        </div>
-        <div class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative">
-            <label class="block text-white text-lg font-bold mb-1 tracking-[-0.9px]">Creativity</label>
-            <div class="flex items-center space-x-4">
-                <p class="text-customGreyFour whitespace-nowrap text-xs mr-2 tracking-[-0.84px]">Choose between 0 to 1
-                </p>
-                <div class="relative mb-1 w-full">
-
-                    <input id="creativity-slider" type="range" min="0" max="1" step="0.1" value="0"
-                        class="w-full max-w-[207px] h-2 bg-white rounded-lg  cursor-pointer">
-                    <div id="slider-value"
-                        class="absolute w-[36px] text-[13px] text-center   -top-11 bg-custom-gradient text-white text-sm px-2 py-1 rounded-full transform -translate-x-1/2">
-                        <span id="slider-number">0</span>
-                        <div class="absolute left-1/2 bottom-[0.15px] transform -translate-x-1/2 translate-y-full">
-                            <img src="/static/images/value-bottom-slider.png" alt="description" class="w-[8px] h-[4px]">
-                        </div>
-                    </div>
-
-                </div>
+      class="hidden md:flex md:max-w-[300px] lg:max-w-[450px] w-full bg-custom-gradient text-white p-7 flex-col justify-between"
+    >
+      <div>
+        <img
+          src="/static/images/sidebar-origen-logo.png"
+          alt="Origen Logo"
+          class=""
+        />
+        <button
+          class="bg-customYellow flex justify-between items-center text-customGrey p-20 rounded-custom-lg mx-2 w-full mt-12"
+        >
+          Begin a New Chat
+          <img src="/static/images/plus-icon.png" />
+        </button>
+      </div>
+      <div
+        class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative"
+      >
+        <label class="block text-white text-lg font-bold mb-1 tracking-[-0.9px]"
+          >Creativity</label
+        >
+        <div class="flex items-center space-x-4">
+          <p
+            class="text-customGreyFour whitespace-nowrap text-xs mr-2 tracking-[-0.84px]"
+          >
+            Choose between 0 to 1
+          </p>
+          <div class="relative mb-1 w-full">
+            <input
+              id="creativity-slider"
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value="0"
+              class="w-full max-w-[207px] h-2 bg-white rounded-lg cursor-pointer"
+            />
+            <div
+              id="slider-value"
+              class="absolute w-[36px] text-[13px] text-center -top-11 bg-custom-gradient text-white text-sm px-2 py-1 rounded-full transform -translate-x-1/2"
+            >
+              <span id="slider-number">0</span>
+              <div
+                class="absolute left-1/2 bottom-[0.15px] transform -translate-x-1/2 translate-y-full"
+              >
+                <img
+                  src="/static/images/value-bottom-slider.png"
+                  alt="description"
+                  class="w-[8px] h-[4px]"
+                />
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </aside>
 
     <main
-        class="flex-1 bg-white overflow-hidden p-5 md:p-10 md:pb-10 flex flex-col items-center justify-between relative overflow-y-auto">
-        <img src="/static/images/right-bg.png" class="hidden md:block absolute right-0 top-0 select-none" />
-        <img src="/static/images/left-bg.png" class="hidden md:block absolute left-[-400px] top-[-17%] select-none" />
-        <img src="/static/images/middle-bg.png" class="hidden md:block absolute top-[-22%] select-none" />
-        <img src="/static/images/bottom-bg.png" class="hidden md:block absolute bottom-[-40px] left-[-240px] select-none" />
-        <img src="/static/images/right-mbl.png" class=" md:hidden absolute right-0 bottom-0 select-none" />
-        <img src="/static/images/left-mbl.png" class="md:hidden absolute left-0 top-0 select-none" />
-        <div class="w-full">
-            <div class="flex items-center z-40 relative justify-between w-full">
-                <div>
-                    <div onclick="openModal()" class="md:hidden">
-                        <svg width="28" height="16" viewBox="0 0 28 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 2H26" stroke="#303030" stroke-width="2.5" stroke-linecap="round" />
-                            <path d="M2 8H22" stroke="#303030" stroke-width="2.5" stroke-linecap="round" />
-                            <path d="M2 14H17.6522" stroke="#303030" stroke-width="2.5" stroke-linecap="round" />
-                        </svg>
-
-                    </div>
-                </div>
-                <div class="flex hidden md:block p-1 border-[1.5px] border-[#EDEDED] bg-[#F7F7F7] rounded-[43px]">
-                    <button class="px-5 py-2 bg-custom-gradient  text-white font-semibold rounded-custom-xl">Process for
-                        Rag</button>
-                    <button class="px-5 py-2  text-customGreyThree rounded-custom-xl">Give
-                        Full Summary</button>
-                </div>
-                <div class="relative w-[120px] md:hidden">
-                    <button onclick="toggleDropdown()"
-                        class="bg-custom-gradient text-white font-semibold px-[11px] text-xs py-2 rounded-full flex gap-1 items-center justify-between w-full shadow-md">
-                        <span id="selected-text">Process for Rag</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="4" viewBox="0 0 8 4" fill="none">
-                            <path
-                                d="M1.20711 0C0.761654 0 0.538571 0.538571 0.853553 0.853553L3.54645 3.54645C3.74171 3.74171 4.05829 3.74171 4.25355 3.54645L6.94645 0.853555C7.26143 0.538572 7.03835 0 6.59289 0H1.20711Z"
-                                fill="white" />
-                        </svg>
-                    </button>
-                    <div id="dropdown-menu" class="hidden absolute mt-2 w-full bg-white rounded-lg shadow-lg">
-                        <ul class="text-gray-800">
-                            <li onclick="selectOption('Process for Rag')"
-                                class="px-3 py-2 hover:bg-gray-200 cursor-pointer">Process for Rag</li>
-                            <li onclick="selectOption('Automate')" class="px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                                Automate</li>
-                        </ul>
-                    </div>
-                </div>
-                <div>
-                    <button
-                        class="px-7 hidden md:block py-[12px] bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]">References</button>
-                    <button
-                        class="px-5 py-2 md:hidden bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]">Ref</button>
-                </div>
+      class="flex-1 bg-white overflow-hidden p-5 md:p-10 md:pb-10 flex flex-col items-center justify-between relative overflow-y-auto"
+    >
+      <img
+        src="/static/images/right-bg.png"
+        class="hidden md:block absolute right-0 top-0 select-none"
+      />
+      <img
+        src="/static/images/left-bg.png"
+        class="hidden md:block absolute left-[-400px] top-[-17%] select-none"
+      />
+      <img
+        src="/static/images/middle-bg.png"
+        class="hidden md:block absolute top-[-22%] select-none"
+      />
+      <img
+        src="/static/images/bottom-bg.png"
+        class="hidden md:block absolute bottom-[-40px] left-[-240px] select-none"
+      />
+      <img
+        src="/static/images/right-mbl.png"
+        class="md:hidden absolute right-0 bottom-0 select-none"
+      />
+      <img
+        src="/static/images/left-mbl.png"
+        class="md:hidden absolute left-0 top-0 select-none"
+      />
+      <div class="w-full">
+        <div class="flex items-center z-40 relative justify-between w-full">
+          <div>
+            <div onclick="openModal()" class="md:hidden">
+              <svg
+                width="28"
+                height="16"
+                viewBox="0 0 28 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M2 2H26"
+                  stroke="#303030"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M2 8H22"
+                  stroke="#303030"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M2 14H17.6522"
+                  stroke="#303030"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
             </div>
-
-
-
-            <div class="text-center z-40 relative flex flex-col justify-center items-center mt-150">
-                <img src="/static/images/main-origen-logo.png" alt="Origen Logo" class="mx-auto mb-[30px] md:mb-[80px]">
-                <h2 class="text-2xl    md:text-[38px] text-customGrey m-0 font-semibold">How can we <span
-                        class="text-gradient">assist</span> you today?</h2>
-                <p class="text-customGreyTwo max-w-[515px] mt-4 text-base md:text-[22px] font-normal">Get expert
-                    guidance powered by
-                    AI agents specializing in Documentational
-                    Summaries. Choose the agent that suits your needs and start your conversation with ease.</p>
-            </div>
-        </div>
-        <div
-            class="w-full max-w-[95%] md:max-w-[55%] lg:max-w-[55%] customDeskt:max-w-[950px] fixed bottom-6 z-40 bg-white flex border border=[rgba(51, 51, 51, 0.30)] rounded-custom-xl p-2 items-center mt-10">
-
-            <div>
-                <input type="file" id="fileUpload" class="hidden" />
-                <button
-                    class="bg-customYellow flex items-center justify-center w-[40px] h-[40px]   md:w-[64px] md:h-[64px] rounded-full p-[11px] md:p-4"
-                    onclick="document.getElementById('fileUpload').click();">
-                    <img src="/static/images/att-file.png" alt="Attach" class="hidden md:block">
-                    <svg class="block md:hidden" xmlns="http://www.w3.org/2000/svg" width="14" height="15"
-                        viewBox="0 0 14 15" fill="none">
-                        <path
-                            d="M13.1715 6.75421L7.02161 12.9041C5.83976 14.086 3.92527 14.086 2.74342 12.9041C1.56157 11.7223 1.56157 9.80777 2.74342 8.62592L9.4281 1.94124C9.78268 1.58666 10.2636 1.38746 10.765 1.38746C11.2665 1.38746 11.7474 1.58666 12.102 1.94124C12.4565 2.29582 12.6557 2.77673 12.6557 3.27817C12.6557 3.77962 12.4565 4.26053 12.102 4.61511L6.48684 10.2302C6.19271 10.5244 5.71142 10.5244 5.41729 10.2302C5.12317 9.93611 5.12317 9.45482 5.41729 9.16069L10.4976 4.08034L9.69549 3.27817L4.61513 8.35853C4.26055 8.71311 4.06135 9.19402 4.06135 9.69547C4.06135 10.1969 4.26055 10.6778 4.61513 11.0324C4.96971 11.387 5.45062 11.5862 5.95207 11.5862C6.45351 11.5862 6.93442 11.387 7.289 11.0324L12.9041 5.41727C14.086 4.23542 14.086 2.32093 12.9041 1.13908C11.7223 -0.0427737 9.80779 -0.0427737 8.62594 1.13908L1.94126 7.82376C0.315545 9.44947 0.315545 12.0806 1.94126 13.7063C3.56697 15.332 6.19806 15.332 7.82378 13.7063L13.9737 7.55637L13.1715 6.75421Z"
-                            fill="#333333" />
-                    </svg>
-                </button>
-            </div>
-            <input type="text" placeholder="type your prompt here"
-                class="flex-1 text-customGrey text-xs md:text-[20px] placeholder:text-[rgba(51, 51, 51, 0.60)] px-5 py-3 rounded-none focus:outline-none">
+          </div>
+          <div class="relative w-1/5">
             <button
-                class="bg-custom-gradient  flex items-center justify-center w-[40px] h-[40px]    md:w-[64px] md:h-[64px] rounded-full  p-[0] md:p-4 ">
-                <img src="/static/images/next-arrow.png" alt="Attach" class="hidden md:block">
-                <svg class="block md:hidden" xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                    viewBox="0 0 40 40" fill="none">
-                    <rect width="40" height="40" rx="20" fill="url(#paint0_linear_126_346)" />
-                    <rect x="0.5" y="0.5" width="39" height="39" rx="19.5" stroke="#333333" stroke-opacity="0.2" />
-                    <path
-                        d="M20.3194 12.8019C20.225 12.8973 20.1501 13.0106 20.099 13.1354C20.0479 13.2601 20.0216 13.3939 20.0216 13.529C20.0216 13.6641 20.0479 13.7979 20.099 13.9226C20.1501 14.0474 20.225 14.1607 20.3194 14.2561L24.663 18.6605H12.2623C11.9938 18.6605 11.7363 18.7687 11.5465 18.9612C11.3567 19.1537 11.25 19.4148 11.25 19.687C11.25 19.9593 11.3567 20.2203 11.5465 20.4128C11.7363 20.6053 11.9938 20.7135 12.2623 20.7135H24.663L20.3194 25.1197C20.1292 25.3125 20.0224 25.574 20.0224 25.8467C20.0224 26.1195 20.1292 26.381 20.3194 26.5738C20.5095 26.7667 20.7675 26.875 21.0364 26.875C21.3054 26.875 21.5633 26.7667 21.7535 26.5738L27.8273 20.415C27.9216 20.3196 27.9965 20.2063 28.0476 20.0815C28.0987 19.9567 28.125 19.823 28.125 19.6879C28.125 19.5528 28.0987 19.419 28.0476 19.2942C27.9965 19.1695 27.9216 19.0561 27.8273 18.9608L21.7535 12.8019C21.6594 12.7062 21.5477 12.6303 21.4246 12.5785C21.3016 12.5267 21.1696 12.5 21.0364 12.5C20.9032 12.5 20.7713 12.5267 20.6482 12.5785C20.5252 12.6303 20.4134 12.7062 20.3194 12.8019Z"
-                        fill="white" />
-                    <path
-                        d="M20.676 13.1524L20.6748 13.1536C20.6267 13.2022 20.5881 13.2603 20.5617 13.3248C20.5353 13.3893 20.5216 13.4587 20.5216 13.529C20.5216 13.5993 20.5353 13.6687 20.5617 13.7332C20.5881 13.7977 20.6267 13.8558 20.6748 13.9044L20.6754 13.905L25.019 18.3095L25.8583 19.1605H24.663H12.2623C12.1287 19.1605 11.9991 19.2143 11.9025 19.3123C11.8056 19.4105 11.75 19.5452 11.75 19.687C11.75 19.8289 11.8056 19.9635 11.9025 20.0618L11.5465 20.4128L11.9025 20.0618C11.9991 20.1597 12.1287 20.2135 12.2623 20.2135H24.663H25.858L25.019 21.0645L20.6754 25.4707L20.6754 25.4707C20.5782 25.5693 20.5224 25.7044 20.5224 25.8467C20.5224 25.9891 20.5782 26.1242 20.6754 26.2227L20.3194 26.5738L20.6754 26.2227C20.7723 26.3211 20.9023 26.375 21.0364 26.375C21.1705 26.375 21.3005 26.3211 21.3975 26.2227L27.4713 20.0639L27.4719 20.0633C27.52 20.0147 27.5585 19.9565 27.5849 19.892C27.6113 19.8275 27.625 19.7581 27.625 19.6879C27.625 19.6176 27.6113 19.5482 27.5849 19.4837C27.5585 19.4192 27.52 19.3611 27.4719 19.3125L27.4713 19.3119L21.3975 13.153L21.3968 13.1524C21.3489 13.1036 21.2924 13.0653 21.2306 13.0393C21.1688 13.0133 21.1029 13 21.0364 13C20.97 13 20.904 13.0133 20.8422 13.0393L20.6482 12.5785L20.8422 13.0393C20.7805 13.0653 20.7239 13.1036 20.676 13.1524Z"
-                        stroke="#333333" stroke-opacity="0.2" />
-                    <defs>
-                        <linearGradient id="paint0_linear_126_346" x1="0" y1="20" x2="40" y2="20"
-                            gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#006CD2" />
-                            <stop offset="0.9424" stop-color="#00A3FF" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+              onclick="toggleDropdown()"
+              id="dropdown-btn"
+              class="w-full bg-custom-gradient text-white font-semibold px-4 py-2 rounded-lg flex justify-between items-center"
+            >
+              <span id="selected-text">Process for RAG</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="8"
+                height="4"
+                viewBox="0 0 8 4"
+                fill="none"
+              >
+                <path
+                  d="M1.20711 0C0.761654 0 0.538571 0.538571 0.853553 0.853553L3.54645 3.54645C3.74171 3.74171 4.05829 3.74171 4.25355 3.54645L6.94645 0.853555C7.26143 0.538572 7.03835 0 6.59289 0H1.20711Z"
+                  fill="white"
+                />
+              </svg>
             </button>
+            <div
+              id="dropdown-menu"
+              class="hidden absolute w-full bg-white shadow-md rounded-lg mt-2"
+            >
+              <ul class="text-gray-800">
+                <li
+                  onclick="selectOption('Process for RAG')"
+                  class="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                >
+                  Process for RAG
+                </li>
+                <li
+                  onclick="selectOption('Give Full Summary')"
+                  class="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                >
+                  Give Full Summary
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <button
+              class="px-7 hidden md:block py-[12px] bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]"
+            >
+              References
+            </button>
+            <button
+              class="px-5 py-2 md:hidden bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]"
+            >
+              Ref
+            </button>
+          </div>
         </div>
+
+        <div
+          id="info-section"
+          class="text-center z-40 relative flex flex-col justify-center items-center mt-150"
+        >
+          <img
+            src="/static/images/main-origen-logo.png"
+            alt="Origen Logo"
+            class="mx-auto mb-[30px] md:mb-[80px]"
+          />
+          <h2 class="text-2xl md:text-[38px] text-customGrey m-0 font-semibold">
+            How can we <span class="text-gradient">assist</span> you today?
+          </h2>
+          <p
+            class="text-customGreyTwo max-w-[515px] mt-4 text-base md:text-[22px] font-normal"
+          >
+            Get expert guidance powered by AI agents specializing in
+            Documentational Summaries. Choose the agent that suits your needs
+            and start your conversation with ease.
+          </p>
+        </div>
+        <div id="chat-output" class="mt-4 p-4 bg-gray-200 rounded"></div>
+      </div>
+      <div
+        class="w-full max-w-[95%] md:max-w-[55%] lg:max-w-[55%] customDeskt:max-w-[950px] fixed bottom-6 z-40 bg-white flex border border=[rgba(51, 51, 51, 0.30)] rounded-custom-xl p-2 items-center mt-10"
+      >
+        <div>
+          <input
+            type="file"
+            id="fileUpload"
+            class="hidden"
+            onChange="uploadFile()"
+          />
+          <button
+            class="bg-customYellow flex items-center justify-center w-[40px] h-[40px] md:w-[64px] md:h-[64px] rounded-full p-[11px] md:p-4"
+            onclick="document.getElementById('fileUpload').click();"
+          >
+            <img
+              src="/static/images/att-file.png"
+              alt="Attach"
+              class="hidden md:block"
+            />
+            <svg
+              class="block md:hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="15"
+              viewBox="0 0 14 15"
+              fill="none"
+            >
+              <path
+                d="M13.1715 6.75421L7.02161 12.9041C5.83976 14.086 3.92527 14.086 2.74342 12.9041C1.56157 11.7223 1.56157 9.80777 2.74342 8.62592L9.4281 1.94124C9.78268 1.58666 10.2636 1.38746 10.765 1.38746C11.2665 1.38746 11.7474 1.58666 12.102 1.94124C12.4565 2.29582 12.6557 2.77673 12.6557 3.27817C12.6557 3.77962 12.4565 4.26053 12.102 4.61511L6.48684 10.2302C6.19271 10.5244 5.71142 10.5244 5.41729 10.2302C5.12317 9.93611 5.12317 9.45482 5.41729 9.16069L10.4976 4.08034L9.69549 3.27817L4.61513 8.35853C4.26055 8.71311 4.06135 9.19402 4.06135 9.69547C4.06135 10.1969 4.26055 10.6778 4.61513 11.0324C4.96971 11.387 5.45062 11.5862 5.95207 11.5862C6.45351 11.5862 6.93442 11.387 7.289 11.0324L12.9041 5.41727C14.086 4.23542 14.086 2.32093 12.9041 1.13908C11.7223 -0.0427737 9.80779 -0.0427737 8.62594 1.13908L1.94126 7.82376C0.315545 9.44947 0.315545 12.0806 1.94126 13.7063C3.56697 15.332 6.19806 15.332 7.82378 13.7063L13.9737 7.55637L13.1715 6.75421Z"
+                fill="#333333"
+              />
+            </svg>
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder="type your prompt here"
+          id="user-input"
+          class="flex-1 text-customGrey text-xs md:text-[20px] placeholder:text-[rgba(51, 51, 51, 0.60)] px-5 py-3 rounded-none focus:outline-none"
+        />
+        <button
+          onclick="sendMessage()"
+          class="bg-custom-gradient flex items-center justify-center w-[40px] h-[40px] md:w-[64px] md:h-[64px] rounded-full p-[0] md:p-4"
+        >
+          <img
+            src="/static/images/next-arrow.png"
+            alt="Attach"
+            class="hidden md:block"
+          />
+          <svg
+            class="block md:hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 40 40"
+            fill="none"
+          >
+            <rect
+              width="40"
+              height="40"
+              rx="20"
+              fill="url(#paint0_linear_126_346)"
+            />
+            <rect
+              x="0.5"
+              y="0.5"
+              width="39"
+              height="39"
+              rx="19.5"
+              stroke="#333333"
+              stroke-opacity="0.2"
+            />
+            <path
+              d="M20.3194 12.8019C20.225 12.8973 20.1501 13.0106 20.099 13.1354C20.0479 13.2601 20.0216 13.3939 20.0216 13.529C20.0216 13.6641 20.0479 13.7979 20.099 13.9226C20.1501 14.0474 20.225 14.1607 20.3194 14.2561L24.663 18.6605H12.2623C11.9938 18.6605 11.7363 18.7687 11.5465 18.9612C11.3567 19.1537 11.25 19.4148 11.25 19.687C11.25 19.9593 11.3567 20.2203 11.5465 20.4128C11.7363 20.6053 11.9938 20.7135 12.2623 20.7135H24.663L20.3194 25.1197C20.1292 25.3125 20.0224 25.574 20.0224 25.8467C20.0224 26.1195 20.1292 26.381 20.3194 26.5738C20.5095 26.7667 20.7675 26.875 21.0364 26.875C21.3054 26.875 21.5633 26.7667 21.7535 26.5738L27.8273 20.415C27.9216 20.3196 27.9965 20.2063 28.0476 20.0815C28.0987 19.9567 28.125 19.823 28.125 19.6879C28.125 19.5528 28.0987 19.419 28.0476 19.2942C27.9965 19.1695 27.9216 19.0561 27.8273 18.9608L21.7535 12.8019C21.6594 12.7062 21.5477 12.6303 21.4246 12.5785C21.3016 12.5267 21.1696 12.5 21.0364 12.5C20.9032 12.5 20.7713 12.5267 20.6482 12.5785C20.5252 12.6303 20.4134 12.7062 20.3194 12.8019Z"
+              fill="white"
+            />
+            <path
+              d="M20.676 13.1524L20.6748 13.1536C20.6267 13.2022 20.5881 13.2603 20.5617 13.3248C20.5353 13.3893 20.5216 13.4587 20.5216 13.529C20.5216 13.5993 20.5353 13.6687 20.5617 13.7332C20.5881 13.7977 20.6267 13.8558 20.6748 13.9044L20.6754 13.905L25.019 18.3095L25.8583 19.1605H24.663H12.2623C12.1287 19.1605 11.9991 19.2143 11.9025 19.3123C11.8056 19.4105 11.75 19.5452 11.75 19.687C11.75 19.8289 11.8056 19.9635 11.9025 20.0618L11.5465 20.4128L11.9025 20.0618C11.9991 20.1597 12.1287 20.2135 12.2623 20.2135H24.663H25.858L25.019 21.0645L20.6754 25.4707L20.6754 25.4707C20.5782 25.5693 20.5224 25.7044 20.5224 25.8467C20.5224 25.9891 20.5782 26.1242 20.6754 26.2227L20.3194 26.5738L20.6754 26.2227C20.7723 26.3211 20.9023 26.375 21.0364 26.375C21.1705 26.375 21.3005 26.3211 21.3975 26.2227L27.4713 20.0639L27.4719 20.0633C27.52 20.0147 27.5585 19.9565 27.5849 19.892C27.6113 19.8275 27.625 19.7581 27.625 19.6879C27.625 19.6176 27.6113 19.5482 27.5849 19.4837C27.5585 19.4192 27.52 19.3611 27.4719 19.3125L27.4713 19.3119L21.3975 13.153L21.3968 13.1524C21.3489 13.1036 21.2924 13.0653 21.2306 13.0393C21.1688 13.0133 21.1029 13 21.0364 13C20.97 13 20.904 13.0133 20.8422 13.0393L20.6482 12.5785L20.8422 13.0393C20.7805 13.0653 20.7239 13.1036 20.676 13.1524Z"
+              stroke="#333333"
+              stroke-opacity="0.2"
+            />
+            <defs>
+              <linearGradient
+                id="paint0_linear_126_346"
+                x1="0"
+                y1="20"
+                x2="40"
+                y2="20"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#006CD2" />
+                <stop offset="0.9424" stop-color="#00A3FF" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </button>
+      </div>
     </main>
 
-    <div id="modal"
-        class="fixed inset-0 z-50 w-screen h-screen bg-custom-gradient shadow-lg px-5 py-5 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-hidden md:hidden">
+    <div
+      id="modal"
+      class="fixed inset-0 z-50 w-screen h-screen bg-custom-gradient shadow-lg px-5 py-5 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-hidden md:hidden"
+    >
+      <div class="flex justify-end">
+        <button onclick="closeModal()" class="pb-[6px] pr-[14px]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="29"
+            viewBox="0 0 30 29"
+            fill="none"
+          >
+            <g filter="url(#filter0_i_126_276)">
+              <path
+                d="M2 27L26.9988 2"
+                stroke="white"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+              <path
+                d="M3.00146 2L28.0002 27"
+                stroke="white"
+                stroke-width="4"
+                stroke-linecap="round"
+              />
+            </g>
+            <defs>
+              <filter
+                id="filter0_i_126_276"
+                x="0"
+                y="-4.95911e-05"
+                width="30"
+                height="29.0001"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="BackgroundImageFix"
+                  result="shape"
+                />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset />
+                <feGaussianBlur stdDeviation="2" />
+                <feComposite
+                  in2="hardAlpha"
+                  operator="arithmetic"
+                  k2="-1"
+                  k3="1"
+                />
+                <feColorMatrix
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"
+                />
+                <feBlend
+                  mode="normal"
+                  in2="shape"
+                  result="effect1_innerShadow_126_276"
+                />
+              </filter>
+            </defs>
+          </svg>
+        </button>
+      </div>
 
-        <div class="flex justify-end">
-            <button onclick="closeModal()" class="pb-[6px] pr-[14px]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="29" viewBox="0 0 30 29" fill="none">
-                    <g filter="url(#filter0_i_126_276)">
-                        <path d="M2 27L26.9988 2" stroke="white" stroke-width="4" stroke-linecap="round" />
-                        <path d="M3.00146 2L28.0002 27" stroke="white" stroke-width="4" stroke-linecap="round" />
-                    </g>
-                    <defs>
-                        <filter id="filter0_i_126_276" x="0" y="-4.95911e-05" width="30" height="29.0001"
-                            filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-                            <feColorMatrix in="SourceAlpha" type="matrix"
-                                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                            <feOffset />
-                            <feGaussianBlur stdDeviation="2" />
-                            <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
-                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0" />
-                            <feBlend mode="normal" in2="shape" result="effect1_innerShadow_126_276" />
-                        </filter>
-                    </defs>
-                </svg>
-            </button>
+      <div class="flex w-full text-white flex-col h-full pb-12 justify-between">
+        <div>
+          <img
+            src="static/images/sidebar-origen-logo.png"
+            alt="Origen Logo"
+            class="h-[65px] pl-3"
+          />
+          <button
+            class="bg-customYellow flex justify-between items-center text-customGrey p-20 text-base rounded-custom-lg w-full mt-12"
+          >
+            Begin a New Chat
+            <img src="/static/images/plus-icon.png" />
+          </button>
         </div>
-
-        <div class="flex w-full text-white flex-col h-full  pb-12 justify-between">
-            <div>
-                <img src="static/images/sidebar-origen-logo.png" alt="Origen Logo" class="h-[65px] pl-3">
-                <button
-                    class="bg-customYellow flex justify-between items-center text-customGrey p-20 text-base rounded-custom-lg w-full mt-12">Begin
-                    a New Chat
-                    <img src="/static/images/plus-icon.png" />
-                </button>
-            </div>
-            <div class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative">
-                <label class="block text-white text-lg font-bold mb-1 tracking-[-0.9px]">Creativity</label>
-                <div class="flex items-center space-x-4">
-                    <p class="text-customGreyFour whitespace-nowrap text-xs mr-2 tracking-[-0.84px]">Choose between 0 to
-                        1
-                    </p>
-                    <div class="relative mb-1 w-full">
-
-                        <input id="creativity-slider" type="range" min="0" max="1" step="0.1" value="0"
-                            class="w-full max-w-[207px] h-2 bg-white rounded-lg  cursor-pointer">
-                        <div id="slider-value"
-                            class="absolute w-[36px] text-[13px] text-center   -top-11 bg-custom-gradient text-white text-sm px-2 py-1 rounded-full transform -translate-x-1/2">
-                            <span id="slider-number">0</span>
-                            <div class="absolute left-1/2 bottom-[0.15px] transform -translate-x-1/2 translate-y-full">
-                                <img src="/static/images/value-bottom-slider.png" alt="description" class="w-[8px] h-[4px]">
-                            </div>
-                        </div>
-
-                    </div>
+        <div
+          class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative"
+        >
+          <label
+            class="block text-white text-lg font-bold mb-1 tracking-[-0.9px]"
+            >Creativity</label
+          >
+          <div class="flex items-center space-x-4">
+            <p
+              class="text-customGreyFour whitespace-nowrap text-xs mr-2 tracking-[-0.84px]"
+            >
+              Choose between 0 to 1
+            </p>
+            <div class="relative mb-1 w-full">
+              <input
+                id="creativity-slider"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0"
+                class="w-full max-w-[207px] h-2 bg-white rounded-lg cursor-pointer"
+              />
+              <div
+                id="slider-value"
+                class="absolute w-[36px] text-[13px] text-center -top-11 bg-custom-gradient text-white text-sm px-2 py-1 rounded-full transform -translate-x-1/2"
+              >
+                <span id="slider-number">0</span>
+                <div
+                  class="absolute left-1/2 bottom-[0.15px] transform -translate-x-1/2 translate-y-full"
+                >
+                  <img
+                    src="/static/images/value-bottom-slider.png"
+                    alt="description"
+                    class="w-[8px] h-[4px]"
+                  />
                 </div>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
     <script>
-        const slider = document.getElementById('creativity-slider');
-        const sliderValue = document.getElementById('slider-value');
-        const sliderImage = document.getElementById('slider-image');
-        const sliderNumber = document.getElementById('slider-number');
+      const slider = document.getElementById("creativity-slider");
+      const sliderValue = document.getElementById("slider-value");
+      const sliderImage = document.getElementById("slider-image");
+      const sliderNumber = document.getElementById("slider-number");
 
-        function updateSliderBackground() {
-            const value = (slider.value - slider.min) / (slider.max - slider.min) * 100;
-            slider.style.background = `linear-gradient(90deg, #006CD2 0%, #00A3FF ${value}%, #C0DBFB ${value}%)`;
-        }
-        function toggleDropdown() {
-            document.getElementById("dropdown-menu").classList.toggle("hidden");
-            document.getElementById("dropdown-icon").classList.toggle("rotate-180");
-        }
+      function updateSliderBackground() {
+        const value =
+          ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+        slider.style.background = `linear-gradient(90deg, #006CD2 0%, #00A3FF ${value}%, #C0DBFB ${value}%)`;
+      }
+      function toggleDropdown() {
+        document.getElementById("dropdown-menu").classList.toggle("hidden");
+        document.getElementById("dropdown-icon").classList.toggle("rotate-180");
+      }
 
-        function selectOption(option) {
-            document.getElementById("selected-text").textContent = option;
-            toggleDropdown();
-        }
+      function selectOption(option) {
+        document.getElementById("selected-text").textContent = option;
+        toggleDropdown();
+      }
 
-        slider.addEventListener('input', updateSliderBackground);
-        window.onload = updateSliderBackground;
+      slider.addEventListener("input", updateSliderBackground);
+      window.onload = updateSliderBackground;
 
+      slider.addEventListener("input", function () {
+        updateSliderBackground();
+        sliderNumber.textContent = slider.value;
+        const sliderWidth = slider.offsetWidth;
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        const value = parseFloat(slider.value);
 
-        slider.addEventListener('input', function () {
-            updateSliderBackground()
-            sliderNumber.textContent = slider.value;
-            const sliderWidth = slider.offsetWidth;
-            const min = parseFloat(slider.min);
-            const max = parseFloat(slider.max);
-            const value = parseFloat(slider.value);
-
-            const position = (value - min) / (max - min) * sliderWidth;
-            sliderValue.style.left = `${position}px`;
-            sliderImage.style.left = `${position}px`;
-
-        });
+        const position = ((value - min) / (max - min)) * sliderWidth;
+        sliderValue.style.left = `${position}px`;
+        sliderImage.style.left = `${position}px`;
+      });
     </script>
     <script>
-        function openModal() {
-            document.getElementById('modal').classList.remove('-translate-x-full');
-            document.getElementById('modal').classList.add('translate-x-0');
-        }
+      function openModal() {
+        document.getElementById("modal").classList.remove("-translate-x-full");
+        document.getElementById("modal").classList.add("translate-x-0");
+      }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('translate-x-0');
-            document.getElementById('modal').classList.add('-translate-x-full');
-        }
+      function closeModal() {
+        document.getElementById("modal").classList.remove("translate-x-0");
+        document.getElementById("modal").classList.add("-translate-x-full");
+      }
     </script>
-</body>
 
+    <script>
+      function sendMessage() {
+        document.getElementById("info-section").style.display = "none";
+        const message = document.getElementById("user-input").value;
+        const processType =
+          document.getElementById("selected-text").textContent;
+        const temperature = document.getElementById("creativity-slider").value;
+
+        fetch("/chatbot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message,
+            data_type: processType,
+            temperature,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById(
+              "chat-output"
+            ).innerHTML = `<p><strong>Bot:</strong> ${data.response}</p>`;
+          });
+      }
+
+      function uploadFile() {
+        const fileInput = document.getElementById("fileUpload"); // Ensure this matches the input ID
+        if (!fileInput) {
+          console.error("File input element not found.");
+          return;
+        }
+
+        const file = fileInput.files[0];
+        if (!file) {
+          alert("Please select a file to upload.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.chatbot_response) {
+              document.getElementById(
+                "chat-output"
+              ).innerHTML += `<p><strong>File Response:</strong> ${data.chatbot_response}</p>`;
+            } else {
+              console.error("Unexpected response:", data);
+            }
+          })
+          .catch((error) => console.error("Upload failed:", error));
+      }
+    </script>
+  </body>
 </html>
