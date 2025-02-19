@@ -251,25 +251,37 @@ def chatbot_response():
 
 # 📌 API Endpoint for File Upload and Processing
 @app.route('/upload', methods=['POST'])
-def upload_file():
+def upload_files():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
+    if 'files[]' not in request.files:
+        return jsonify({"error": "No files provided"}), 400
 
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+    files = request.files.getlist('files[]')  # Get all uploaded files
+    data_type = request.form.get('data_type', "Process for RAG")
+    temperature = request.form.get('temperature', 0.0)
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({"error": "No valid files selected"}), 400
 
-    filename = secure_filename(file.filename)
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(file_path)
-
+    uploaded_files = []
     chatbot_history = []  # Placeholder for user-specific history
-    _, updated_chat = UploadFile.process_uploaded_files([file_path], chatbot_history, "Give Full Summary")
 
-    return jsonify({"message": "File uploaded successfully!", "chatbot_response": updated_chat[-1][1]})
+    for file in files:
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            uploaded_files.append(file_path)
+
+    # Process all uploaded files at once
+    _, updated_chat = UploadFile.process_uploaded_files(uploaded_files, chatbot_history, data_type)
+
+    return jsonify({
+        "message": "Files uploaded successfully!",
+        "chatbot_responses": [chat[1] for chat in updated_chat]  # Collect all responses
+    })
+
 
 # 📌 API Endpoint for Fetching Available Processing Options
 @app.route('/options', methods=['GET'])

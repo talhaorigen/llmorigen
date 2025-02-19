@@ -116,12 +116,6 @@
           alt="Origen Logo"
           class=""
         />
-        <button
-          class="bg-customYellow flex justify-between items-center text-customGrey p-20 rounded-custom-lg mx-2 w-full mt-12"
-        >
-          Begin a New Chat
-          <img src="/static/images/plus-icon.png" />
-        </button>
       </div>
       <div
         class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative"
@@ -230,7 +224,7 @@
               id="dropdown-btn"
               class="w-full bg-custom-gradient text-white font-semibold px-4 py-2 rounded-lg flex justify-between items-center"
             >
-              <span id="selected-text">Process for RAG</span>
+              <span id="data-type">Process for RAG</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="8"
@@ -255,26 +249,21 @@
                 >
                   Process for RAG
                 </li>
-                <li
+                <!-- <li
                   onclick="selectOption('Give Full Summary')"
                   class="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                 >
                   Give Full Summary
-                </li>
+                </li> -->
               </ul>
             </div>
           </div>
           <div>
-            <button
-              class="px-7 hidden md:block py-[12px] bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]"
-            >
-              References
-            </button>
-            <button
-              class="px-5 py-2 md:hidden bg-customYellow cursor-pointer opacity-50 text-customGrey rounded-[30px]"
-            >
-              Ref
-            </button>
+            <button id="referenceButton"
+            class="hidden md:flex px-5 py-[12px] bg-customYellow cursor-pointer text-customGrey rounded-[30px]"
+            onclick="openModalRef()">References</button>
+        <button  id="referenceButton" class="px-5 py-2 md:hidden bg-customYellow cursor-pointer text-customGrey rounded-[30px]"
+            onclick="openModalRef()">Ref</button>
           </div>
         </div>
 
@@ -304,12 +293,7 @@
         class="w-full max-w-[95%] md:max-w-[55%] lg:max-w-[55%] customDeskt:max-w-[950px] fixed bottom-6 z-40 bg-white flex border border=[rgba(51, 51, 51, 0.30)] rounded-custom-xl p-2 items-center mt-10"
       >
         <div>
-          <input
-            type="file"
-            id="fileUpload"
-            class="hidden"
-            onChange="uploadFile()"
-          />
+          <input type="file" id="fileUpload" multiple class="hidden" onChange="uploadFiles()">
           <button
             class="bg-customYellow flex items-center justify-center w-[40px] h-[40px] md:w-[64px] md:h-[64px] rounded-full p-[11px] md:p-4"
             onclick="document.getElementById('fileUpload').click();"
@@ -399,6 +383,38 @@
       </div>
     </main>
 
+    <div id="modal-ref"
+    class="fixed z-40 font-semibold text-sm w-custom md:max-h-[675px] top-5 md:top-32 right-0 h-custom md:h-full md:w-80 bg-white shadow-lg px-10 py-6 transform translate-x-full border border-customGreyEight transition-transform duration-300 ease-in-out rounded-2xl overflow-y-auto">
+
+    <div class="flex justify-end items-center mb-[-3px]">
+        <button onclick="closeModalRef()" class="text-2xl font-bold text-gray-600 hover:text-gray-800"><svg
+                xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
+                <g filter="url(#filter0_i_1_591)">
+                    <path d="M1 13L12.9995 1" stroke="black" stroke-width="2" stroke-linecap="round" />
+                    <path d="M1.48047 1L13.48 13" stroke="black" stroke-width="2" stroke-linecap="round" />
+                </g>
+                <defs>
+                    <filter id="filter0_i_1_591" x="0" y="0" width="14.48" height="14" filterUnits="userSpaceOnUse"
+                        color-interpolation-filters="sRGB">
+                        <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                        <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                        <feColorMatrix in="SourceAlpha" type="matrix"
+                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                        <feOffset />
+                        <feGaussianBlur stdDeviation="2" />
+                        <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0" />
+                        <feBlend mode="normal" in2="shape" result="effect1_innerShadow_1_591" />
+                    </filter>
+                </defs>
+            </svg></button>
+    </div>
+
+    <div class="space-y-4 text-sm text-customGrey w-full" id = "reference-container">
+
+    </div>
+</div>
+
     <div
       id="modal"
       class="fixed inset-0 z-50 w-screen h-screen bg-custom-gradient shadow-lg px-5 py-5 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-hidden md:hidden"
@@ -479,12 +495,6 @@
             alt="Origen Logo"
             class="h-[65px] pl-3"
           />
-          <button
-            class="bg-customYellow flex justify-between items-center text-customGrey p-20 text-base rounded-custom-lg w-full mt-12"
-          >
-            Begin a New Chat
-            <img src="/static/images/plus-icon.png" />
-          </button>
         </div>
         <div
           class="bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg p-4 mt-6 relative"
@@ -540,15 +550,24 @@
           ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
         slider.style.background = `linear-gradient(90deg, #006CD2 0%, #00A3FF ${value}%, #C0DBFB ${value}%)`;
       }
-      function toggleDropdown() {
-        document.getElementById("dropdown-menu").classList.toggle("hidden");
-        document.getElementById("dropdown-icon").classList.toggle("rotate-180");
-      }
+        function toggleDropdown() {
+            document.getElementById("dropdown-menu").classList.toggle("hidden");
+        }
 
-      function selectOption(option) {
-        document.getElementById("selected-text").textContent = option;
-        toggleDropdown();
-      }
+        function selectOption(option) {
+            const dataTypeElement = document.getElementById("data-type");
+            const chatOutput = document.getElementById("chat-output");
+            const infoSection = document.getElementById("info-section");
+
+            if (dataTypeElement.textContent !== option) {
+                dataTypeElement.textContent = option;
+                chatOutput.innerHTML = "";
+                infoSection.style.display = "block";
+            }
+
+            toggleDropdown();
+        }
+
 
       slider.addEventListener("input", updateSliderBackground);
       window.onload = updateSliderBackground;
@@ -567,74 +586,152 @@
       });
     </script>
     <script>
-      function openModal() {
-        document.getElementById("modal").classList.remove("-translate-x-full");
-        document.getElementById("modal").classList.add("translate-x-0");
-      }
+        function openModal() {
+          document.getElementById("modal").classList.remove("-translate-x-full");
+          document.getElementById("modal").classList.add("translate-x-0");
+        }
+  
+        function closeModal() {
+          document.getElementById("modal").classList.remove("translate-x-0");
+          document.getElementById("modal").classList.add("-translate-x-full");
+        }
+      </script>
+    <script>
+        function openModalRef() {
+            if (window.innerWidth < 768) {
+                document.getElementById('modal-ref').classList.remove('translate-x-full','right-0');
+                document.getElementById('modal-ref').classList.add('translate-x-0', 'right-5');
 
-      function closeModal() {
-        document.getElementById("modal").classList.remove("translate-x-0");
-        document.getElementById("modal").classList.add("-translate-x-full");
-      }
+            } else {
+                document.getElementById('modal-ref').classList.remove('translate-x-full', 'right-0');
+                document.getElementById('modal-ref').classList.add('translate-x-0', 'right-10');
+
+            }
+
+
+            const refButton = document.getElementById('referenceButton');
+            refButton.disabled = true;
+            refButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function closeModalRef() {
+            if (window.innerWidth < 768) {
+                document.getElementById('modal-ref').classList.remove('translate-x-0', 'right-5');
+                document.getElementById('modal-ref').classList.add('translate-x-full', 'right-0');
+            } else {
+                document.getElementById('modal-ref').classList.remove('translate-x-0', 'right-10');
+                document.getElementById('modal-ref').classList.add('translate-x-full', 'right-0');
+            }
+
+
+            const refButton = document.getElementById('referenceButton');
+            refButton.disabled = false;
+            refButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
     </script>
 
     <script>
-      function sendMessage() {
-        document.getElementById("info-section").style.display = "none";
-        const message = document.getElementById("user-input").value;
-        const processType =
-          document.getElementById("selected-text").textContent;
-        const temperature = document.getElementById("creativity-slider").value;
-
-        fetch("/chatbot", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message,
-            data_type: processType,
-            temperature,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById(
-              "chat-output"
-            ).innerHTML = `<p><strong>Bot:</strong> ${data.response}</p>`;
-          });
-      }
-
-      function uploadFile() {
-        const fileInput = document.getElementById("fileUpload"); // Ensure this matches the input ID
-        if (!fileInput) {
-          console.error("File input element not found.");
-          return;
+        function addReferences(references) {
+            const referenceContainer = document.getElementById("reference-container");
+            
+            // Clear existing references before appending new ones
+            referenceContainer.innerHTML = "";
+        
+            const referenceEntries = references.split("# Reference"); // Split references
+            referenceEntries.shift(); // Remove empty first entry
+        
+            referenceEntries.forEach((entry, index) => {
+                // Extract reference content and source
+                const referenceTextMatch = entry.match(/'(.*?)'/s);
+                const referenceText = referenceTextMatch ? referenceTextMatch[1] : "No reference text available";
+        
+                const sourceMatch = entry.match(/Source: (.*?) \| Page number: (\d+)/);
+                const sourceText = sourceMatch ? sourceMatch[1] : "No source available";
+                const pageNumber = sourceMatch ? sourceMatch[2] : "N/A";
+        
+                // Create reference div
+                const referenceDiv = document.createElement("div");
+                referenceDiv.innerHTML = `
+                    <p class="max-w-[231px] md:max-w-full">Reference ${index + 1}:<br> <span>${referenceText}</span> </p>
+                    <p class="mt-3 max-w-[231px] md:max-w-full">Source: <span>${sourceText}</span>, Page: ${pageNumber}</p>
+                `;
+        
+                referenceContainer.appendChild(referenceDiv);
+            });
         }
+        
+        function sendMessage() {
+            document.getElementById("info-section").style.display = "none";
+            const userInput = document.getElementById("user-input");
+            const message = userInput.value;
+            const processType = document.getElementById("data-type").textContent;
+            const temperature = document.getElementById("creativity-slider").value;
+            const chatOutput = document.getElementById("chat-output");
+        
+            if (!message.trim()) return; 
+        
+            const userMessage = `<div class="p-2 bg-blue-100 rounded-lg my-2"><strong>You:</strong> ${message}</div>`;
+            chatOutput.innerHTML += userMessage;
+        
+            userInput.value = "";
+        
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        
+            fetch("/chatbot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message,
+                    data_type: processType,
+                    temperature,
+                }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                const botMessage = `<div class="p-2 bg-gray-300 rounded-lg my-2"><strong>Bot:</strong> ${data.response}</div>`;
+                chatOutput.innerHTML += botMessage;
+        
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+                addReferences(data.references)
+            })
+            .catch((error) => console.error("Error:", error));
+        }        
 
-        const file = fileInput.files[0];
-        if (!file) {
-          alert("Please select a file to upload.");
-          return;
+        function uploadFiles() {
+        const chatOutput = document.getElementById("chat-output");
+        chatOutput.innerHTML = "";
+    const fileInput = document.getElementById("fileUpload");
+    const processType = document.getElementById("data-type").textContent;
+    const temperature = document.getElementById("creativity-slider").value;
+ 
+    if (!fileInput.files.length) {
+        alert("Please select at least one file to upload.");
+        return;
+    }
+ 
+    const formData = new FormData();
+    for (const file of fileInput.files) {
+        formData.append("files[]", file);
+    }
+    formData.append("data_type", processType);
+    formData.append("temperature", temperature);
+ 
+    fetch("/upload", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.chatbot_responses) {
+            data.chatbot_responses.forEach(response => {
+                document.getElementById("chat-output").innerHTML += `<p><strong>File Response:</strong> ${response}</p>`;
+            });
+        } else {
+            console.error("Unexpected response:", data);
         }
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        fetch("/upload", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.chatbot_response) {
-              document.getElementById(
-                "chat-output"
-              ).innerHTML += `<p><strong>File Response:</strong> ${data.chatbot_response}</p>`;
-            } else {
-              console.error("Unexpected response:", data);
-            }
-          })
-          .catch((error) => console.error("Upload failed:", error));
-      }
+    })
+    .catch(error => console.error("Upload failed:", error));
+}
     </script>
   </body>
 </html>
