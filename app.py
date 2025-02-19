@@ -291,4 +291,8 @@ def get_options():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    import os
+    port = int(os.environ.get("PORT", 7860))  # Default to 7860 if no PORT is set
+    #demo.launch(server_name="0.0.0.0", server_port=port)
+    app.run(host="0.0.0.0", port=port)
