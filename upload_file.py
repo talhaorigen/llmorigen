@@ -14,12 +14,13 @@ class UploadFile:
     def process_uploaded_files(files_dir: List, chatbot: List, rag_with_dropdown: str) -> Tuple:
 
         if rag_with_dropdown == "Process for RAG":
-            if os.path.exists(APPCFG.custom_persist_directory):
-                shutil.rmtree(APPCFG.custom_persist_directory)
-            os.makedirs(APPCFG.custom_persist_directory, exist_ok=True)
+            persist_dir = APPCFG.custom_persist_directory
+            if os.path.exists(persist_dir):
+                shutil.rmtree(persist_dir)
+            os.makedirs(persist_dir, exist_ok=True)
 
             prepare_vectordb_instance = PrepareVectorDB(data_directory=files_dir,
-                                                        persist_directory=APPCFG.custom_persist_directory,
+                                                        persist_directory=persist_dir,
                                                         embedding_model_engine=APPCFG.embedding_model_engine,
                                                         chunk_size=APPCFG.chunk_size,
                                                         chunk_overlap=APPCFG.chunk_overlap)
