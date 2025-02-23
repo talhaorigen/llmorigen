@@ -250,6 +250,8 @@ def chatbot_response():
     return jsonify({"response": updated_chat[-1][1], "references": references})
 
 # 📌 API Endpoint for File Upload and Processing
+import shutil
+
 @app.route('/upload', methods=['POST'])
 def upload_files():
     if 'user' not in session:
@@ -264,13 +266,19 @@ def upload_files():
     if not files or all(file.filename == '' for file in files):
         return jsonify({"error": "No valid files selected"}), 400
 
+    # Clear the upload folder before saving new files
+    upload_folder = app.config['UPLOAD_FOLDER']
+    if os.path.exists(upload_folder):
+        shutil.rmtree(upload_folder)  # Remove the directory and its contents
+    os.makedirs(upload_folder, exist_ok=True)  # Recreate the directory
+
     uploaded_files = []
     chatbot_history = []  # Placeholder for user-specific history
 
     for file in files:
         if file and file.filename:
             filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
             uploaded_files.append(file_path)
 
@@ -281,6 +289,7 @@ def upload_files():
         "message": "Files uploaded successfully!",
         "chatbot_responses": [chat[1] for chat in updated_chat]  # Collect all responses
     })
+
 
 
 # 📌 API Endpoint for Fetching Available Processing Options

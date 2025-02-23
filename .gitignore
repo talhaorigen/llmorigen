@@ -29,10 +29,10 @@ instance/
 *.env
 
 # SQLite database
-*.sqlite3
-*.db
-db.sqlite3
-migrations/
+# *.sqlite3
+# *.db
+# db.sqlite3
+# migrations/
 
 # Static assets cache
 staticfiles/
