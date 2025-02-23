@@ -18,6 +18,9 @@ class UploadFile:
             # if os.path.exists(persist_dir):
             #     shutil.rmtree(persist_dir)
             # os.makedirs(persist_dir, exist_ok=True)
+            # persist_dir = "data/vectordb/uploaded/chroma/"
+            # if os.path.exists(persist_dir):
+            #     shutil.rmtree(persist_dir)
 
             prepare_vectordb_instance = PrepareVectorDB(data_directory=files_dir,
                                                         persist_directory=APPCFG.custom_persist_directory,
