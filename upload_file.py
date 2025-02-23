@@ -4,7 +4,8 @@ from prepare_vectordb import PrepareVectorDB
 from load_config import LoadConfig
 from summarizer import Summarizer
 APPCFG = LoadConfig()
-
+import os
+import shutil
 
 class UploadFile:
 
@@ -13,11 +14,16 @@ class UploadFile:
     def process_uploaded_files(files_dir: List, chatbot: List, rag_with_dropdown: str) -> Tuple:
 
         if rag_with_dropdown == "Process for RAG":
+            if os.path.exists(APPCFG.custom_persist_directory):
+                shutil.rmtree(APPCFG.custom_persist_directory)
+            os.makedirs(APPCFG.custom_persist_directory, exist_ok=True)
+
             prepare_vectordb_instance = PrepareVectorDB(data_directory=files_dir,
                                                         persist_directory=APPCFG.custom_persist_directory,
                                                         embedding_model_engine=APPCFG.embedding_model_engine,
                                                         chunk_size=APPCFG.chunk_size,
                                                         chunk_overlap=APPCFG.chunk_overlap)
+            
             prepare_vectordb_instance.prepare_and_save_vectordb()
             chatbot.append(
                 (" ", "Uploaded files are ready. Please ask your question"))
