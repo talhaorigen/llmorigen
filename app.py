@@ -12,8 +12,8 @@ app = Flask(__name__)
 app.secret_key = '83930bHKHKLJE_-wnreknwi43hnwkj4888'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'  # Folder to store uploaded files
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)  # Ensure folder exists
+app.config['UPLOAD_FOLDER'] = 'uploads'  
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)  
 
 db = SQLAlchemy(app)
 
@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)  # Store hashed password
+    password = db.Column(db.String(200), nullable=False)  
     full_name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100))
 
@@ -34,7 +34,7 @@ u3= User(email= 'ali.s@origen.co',password= "ali@123", full_name= 'Ali Saeed', c
 
 
 with app.app_context():
-    db.session.execute(text('DELETE FROM user'))  # Wrap the SQL command
+    db.session.execute(text('DELETE FROM user'))  
     db.session.add_all([u1,u2, u3])
     db.session.commit()
 
@@ -44,29 +44,6 @@ def home():
     if 'user' in session:
         return redirect(url_for('chat'))
     return redirect(url_for('signin'))
-
-# # Signup Route
-# @app.route('/signup', methods=['GET', 'POST'])
-# def signup():
-#     if request.method == 'POST':
-#         email = request.form['email']
-#         password = request.form['password']
-#         full_name = request.form['full_name']
-#         contact = request.form.get('contact', '')
-
-#         existing_user = User.query.filter_by(email=email).first()
-#         if existing_user:
-#             flash("User already exists! Try signing in.", "danger")
-#             return redirect(url_for('signup'))
-
-#         hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-#         new_user = User(email=email, password=hashed_password, full_name=full_name, contact=contact)
-#         db.session.add(new_user)
-#         db.session.commit()
-#         session['user'] = email
-#         flash("Account created successfully!", "success")
-#         return redirect(url_for('chat'))
-#     return render_template('signup.html')
 
 # Disabled Signup Route
 @app.route('/signup', methods=['GET', 'POST'])
