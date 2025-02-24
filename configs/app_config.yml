@@ -44,7 +44,7 @@ splitter_config:
   chunk_overlap: 500
 
 retrieval_config:
-  k: 3
+  k: 1
 
 serve:
   port: 8000

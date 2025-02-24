@@ -31,6 +31,17 @@ class PrepareVectorDB:
         self.persist_directory = persist_directory
         self.embedding = OpenAIEmbeddings()
 
+    def clear_vectordb(self):
+        """Clear all existing vectors from the vector database without deleting the file."""
+        print("Clearing vector database...")
+        vectordb = Chroma(
+            embedding_function=self.embedding,
+            persist_directory=self.persist_directory
+        )
+        vectordb.delete_collection()  # This deletes all data inside the collection
+        vectordb.persist()  # Save changes
+        print("Vector database cleared successfully.")
+    
     def __load_all_documents(self) -> List:
 
         doc_counter = 0
@@ -72,6 +83,7 @@ class PrepareVectorDB:
             embedding=self.embedding,
             persist_directory=self.persist_directory
         )
+        vectordb.persist()
         print("VectorDB is created and saved.")
         print("Number of vectors in vectordb:",
               vectordb._collection.count(), "\n\n")

@@ -57,13 +57,17 @@
         </div>
 
         <div class="w-full md:max-w-540 bg-custom-gradient text-white py-20 px-7 md:p-10 rounded-custom-xl">
-            <h2 class="text-lg md:text-2xl mb-1">Welcome to <span class="text-customYellow font-extrabold">Origen LLM Model</span>
+            <h2 class="text-lg md:text-2xl mb-1">Welcome to <span class="text-customYellow font-extrabold">Origin Custom AI Demos</span>
             </h2>
             <h1 class="text-3xl font-bold mb-10 md:mb-12">Sign in</h1>
             {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
+            {% if messages %}
                 {% for category, message in messages %}
-                    <div class="mt-4 p-3 bg-{{ 'red' if category == 'danger' else 'green' }}-500 text-white text-center rounded">{{ message }}</div>
+                    {% if loop.last %}
+                        <div class="mt-4 p-3 bg-{{ 'red' if category == 'danger' else 'green' }}-500 text-white text-center rounded">
+                            {{ message }}
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 {% endif %}
             {% endwith %}
@@ -84,22 +88,6 @@
                             class="text-white font-bold  underline">Sign up</a></p>
                     <button type="submit"
                         class="bg-customYellow md:max-w-236 w-full text-customGrey py-4 px-6 text-base rounded-lg font-medium ">Sign In</button>
-                </div>
-
-                <div class="flex items-center justify-between mt-6 pt-7 md:pt-0 pb-7 md:pb-0">
-                    <button class="flex h-[55px] cursor-pointer items-center text-sm md:text-base justify-start py-4 md:py-14 w-full gap-3 md:gap-5 bg-white text-black pl-4 md:pl-8 rounded-lg shadow">
-                        <img src="/static/images/google-icon.png" alt="Google" class="w-5 h-5 md:mr-2">
-                        Sign In with Google
-                    </button>
-
-                    <div class="flex space-x-3 md:space-x-4 ml-[14px] md:ml-5">
-                        <div class="flex items-center cursor-pointer justify-center bg-white h-[55px] w-[40px] md:w-[60px]  rounded-[9px]">
-                            <img src="/static/images/facebook-icon.png" alt="Facebook" class="">
-                        </div>
-                        <div class="flex items-center justify-center cursor-pointer  h-[55px] w-[40px] md:w-[60px]  bg-white  rounded-[9px]">
-                            <img src="/static/images/camera-icon.png" alt="Camera" class="">
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>

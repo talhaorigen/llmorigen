@@ -158,6 +158,26 @@
           </div>
         </div>
       </div>
+      <div class="flex items-center justify-between mt-10 p-4 bg-[rgba(30,30,30,0.54)] backdrop-blur-[30px] rounded-custom-lg">
+        <div class="text-white font-semibold">
+          Logged in as <br />
+          <span class="text-customYellow">{{user.full_name}}</span> <!-- Replace with dynamic username if needed -->
+        </div>
+        <button
+          onclick="logoutUser()"
+          class="bg-customYellow text-customGrey px-3 py-2 rounded-lg hover:bg-yellow-400"
+        >
+          Logout
+        </button>
+      </div>
+      
+      <!-- Add this JavaScript function at the end of your <script> tags -->
+      <script>
+        function logoutUser() {
+          // Redirect or clear session logic goes here
+          window.location.href = '/logout'; // Adjust this link based on your app's logout route
+        }
+      </script>
     </aside>
 
     <main
@@ -262,10 +282,10 @@
           <div>
             <button id="referenceButton"
             class="hidden md:flex px-5 py-[12px] bg-customYellow cursor-pointer text-customGrey rounded-[30px]"
-            onclick="openModalRef()">References</button>
+            onclick="openModalRef()">Display Sources</button>
         <button  id="referenceButton" class="px-5 py-2 md:hidden bg-customYellow cursor-pointer text-customGrey rounded-[30px]"
-            onclick="openModalRef()">Ref</button>
-          </div>
+            onclick="openModalRef()">Sources</button>
+          </div>   
         </div>
 
         <div
@@ -287,7 +307,11 @@
             Documentational Conversations.
           </p>
         </div>
-        <div id="chat-output" class="mt-4 p-4 bg-gray-200 rounded"></div>
+        <div id="chat-output" class="mt-4 p-4 rounded">
+        </div>
+        <div class="flex flex-col gap-10 pb-[120px]">
+          <button id="clear-history-btn" class="z-20 mt-10 text-gradient text-center underline custom-inset-shadow block">Clear Cache / Remove History</button>
+      </div>
       </div>
       <div
         class="w-full max-w-[95%] md:max-w-[55%] lg:max-w-[55%] customDeskt:max-w-[950px] fixed bottom-6 z-40 bg-white flex border border=[rgba(51, 51, 51, 0.30)] rounded-custom-xl p-2 items-center mt-10"
@@ -384,7 +408,7 @@
     </main>
 
     <div id="modal-ref"
-    class="fixed z-40 font-semibold text-sm w-custom md:max-h-[675px] top-5 md:top-32 right-0 h-custom md:h-full md:w-80 bg-white shadow-lg px-10 py-6 transform translate-x-full border border-customGreyEight transition-transform duration-300 ease-in-out rounded-2xl overflow-y-auto">
+    class="fixed z-40 font-semibold text-sm top-5 md:top-32 right-0 h-custom  max-w-3xl max-h-[90%] mx-auto bg-white shadow-lg px-10 py-6 transform translate-x-full border border-customGreyEight transition-transform duration-300 ease-in-out rounded-2xl overflow-y-auto">
 
     <div class="flex justify-end items-center mb-[-3px]">
         <button onclick="closeModalRef()" class="text-2xl font-bold text-gray-600 hover:text-gray-800"><svg
@@ -667,6 +691,7 @@
             const processType = document.getElementById("data-type").textContent;
             const temperature = document.getElementById("creativity-slider").value;
             const chatOutput = document.getElementById("chat-output");
+
         
             if (!message.trim()) return; 
         
@@ -674,6 +699,12 @@
             chatOutput.innerHTML += userMessage;
         
             userInput.value = "";
+
+            const reasoningMessage = document.createElement("div");
+            reasoningMessage.className = "p-2 bg-gray-300 rounded-lg my-2 font-bold";
+            reasoningMessage.innerText = "Reasoning...";
+            chatOutput.appendChild(reasoningMessage);
+
         
             chatOutput.scrollTop = chatOutput.scrollHeight;
         
@@ -688,6 +719,7 @@
             })
             .then((response) => response.json())
             .then((data) => {
+                reasoningMessage.remove();
                 const botMessage = `<div class="p-2 bg-gray-300 rounded-lg my-2"><strong>Bot:</strong> ${data.response}</div>`;
                 chatOutput.innerHTML += botMessage;
         
@@ -698,40 +730,73 @@
         }        
 
         function uploadFiles() {
-        const chatOutput = document.getElementById("chat-output");
-        chatOutput.innerHTML = "";
-    const fileInput = document.getElementById("fileUpload");
-    const processType = document.getElementById("data-type").textContent;
-    const temperature = document.getElementById("creativity-slider").value;
- 
-    if (!fileInput.files.length) {
-        alert("Please select at least one file to upload.");
-        return;
-    }
- 
-    const formData = new FormData();
-    for (const file of fileInput.files) {
-        formData.append("files[]", file);
-    }
-    formData.append("data_type", processType);
-    formData.append("temperature", temperature);
- 
-    fetch("/upload", {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.chatbot_responses) {
-            data.chatbot_responses.forEach(response => {
-                document.getElementById("chat-output").innerHTML += `<p><strong>File Response:</strong> ${response}</p>`;
-            });
-        } else {
-            console.error("Unexpected response:", data);
+          document.getElementById("info-section").style.display = "none";
+
+          const chatOutput = document.getElementById("chat-output");
+          chatOutput.innerHTML = "";
+          const fileInput = document.getElementById("fileUpload");
+          const processType = document.getElementById("data-type").textContent;
+          const temperature = document.getElementById("creativity-slider").value;
+
+
+          const uploadMessage = document.createElement("div");
+          uploadMessage.className = "p-2 bg-gray-300 rounded-lg my-2 font-bold";
+          uploadMessage.innerText = "Processing Files...";
+          chatOutput.appendChild(uploadMessage);
+
+  
+          if (!fileInput.files.length) {
+              alert("Please select at least one file to upload.");
+              return;
+          }
+      
+          const formData = new FormData();
+          for (const file of fileInput.files) {
+              formData.append("files[]", file);
+          }
+          formData.append("data_type", processType);
+          formData.append("temperature", temperature);
+      
+          fetch("/upload", {
+              method: "POST",
+              body: formData,
+          })
+          .then(response => response.json())
+          .then(data => {
+              uploadMessage.remove();
+              if (data.chatbot_responses) {
+                  data.chatbot_responses.forEach(response => {
+                      document.getElementById("chat-output").innerHTML += `<div class="p-2 bg-gray-300 rounded-lg my-2 font-bold">${response}</div>`;
+                  });
+              } else {
+                  console.error("Unexpected response:", data);
+              }
+          })
+          .catch(error => console.error("Upload failed:", error));
         }
-    })
-    .catch(error => console.error("Upload failed:", error));
-}
+        document.getElementById("clear-history-btn").addEventListener("click", function () {
+          fetch('/clear_cache', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message) {
+              const chatOutput = document.getElementById("chat-output");
+              chatOutput.innerHTML = "";
+              document.getElementById("info-section").style.display = "flex";
+              localStorage.clear();
+              alert(data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error clearing cache:', error);
+          });
+        });
     </script>
+
+    
   </body>
 </html>

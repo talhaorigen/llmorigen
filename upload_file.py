@@ -28,6 +28,7 @@ class UploadFile:
                                                         chunk_size=APPCFG.chunk_size,
                                                         chunk_overlap=APPCFG.chunk_overlap)
             
+            prepare_vectordb_instance.clear_vectordb()
             prepare_vectordb_instance.prepare_and_save_vectordb()
             chatbot.append(
                 (" ", "Uploaded files are ready. Please ask your question"))
