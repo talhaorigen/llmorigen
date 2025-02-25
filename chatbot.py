@@ -14,75 +14,12 @@ APPCFG = LoadConfig()
 
 class ChatBot:
 
-    # @staticmethod
-    # def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0) -> Tuple:
-    #     """
-    #     Generate a response to a user query using document retrieval and language model completion.
 
-    #     Parameters:
-    #         chatbot (List): List representing the chatbot's conversation history.
-    #         message (str): The user's query.
-    #         data_type (str): Type of data used for document retrieval ("Preprocessed doc" or "Upload doc: Process for RAG").
-    #         temperature (float): Temperature parameter for language model completion.
-
-    #     Returns:
-    #         Tuple: A tuple containing an empty string, the updated chat history, and references from retrieved documents.
-    #     """
-    #     #vectordb = None
-
-    #     if data_type == "Preprocessed doc": #For files already stored in db
-    #         # directories
-    #         if os.path.exists(APPCFG.persist_directory):
-    #             vectordb = Chroma(persist_directory=APPCFG.persist_directory,
-    #                               embedding_function=APPCFG.embedding_model)
-    #         else:
-    #             chatbot.append(
-    #                 (message, f"VectorDB does not exist. Please first execute the 'upload_data_manually.py' module. For further information please visit {hyperlink}."))
-    #             return "", chatbot, None
-
-    #     elif data_type == "Process for RAG":
-    #         if os.path.exists(APPCFG.custom_persist_directory):
-    #             vectordb = Chroma(persist_directory=APPCFG.custom_persist_directory,
-    #                               embedding_function=APPCFG.embedding_model)
-    #         else:
-    #             chatbot.append(
-    #                 (message, f"Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
-    #             return "", chatbot, None
-
-    #     docs = vectordb.similarity_search(message, k=APPCFG.k)
-    #     print(docs)
-    #     question = "# User new question:\n" + message
-    #     retrieved_content = ChatBot.clean_references(docs)
-
-    #     # Memory: Set in yaml
-    #     chat_history = f"Chat history:\n {str(chatbot[-APPCFG.number_of_q_a_pairs:])}\n\n"
-    #     prompt = f"{chat_history}{retrieved_content}{question}"
-    #     print("========================")
-    #     print(prompt)
-
-    #     response = openai.ChatCompletion.create(
-    #         messages=[
-    #             {"role": "system", "content": APPCFG.llm_system_role},
-    #             {"role": "user", "content": prompt}
-    #         ],
-    #         model="gpt-4",
-    #         #engine=APPCFG.llm_engine,
-    #         #messages=messages,
-    #         temperature=temperature,
-    #         # message=message,
-    #         #stream=False
-    #     )
-    #     chatbot.append(
-    #         (message, response["choices"][0]["message"]["content"]))
-    #     time.sleep(10)
-
-    #     return "", chatbot, retrieved_content
     @staticmethod
     def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0) -> Tuple:
         """
         Generate a response to a user query using document retrieval and language model completion.
         """
-        # Determine which directory to use and what error to show if it doesn't exist.
         if data_type == "Preprocessed doc":
             directory = APPCFG.persist_directory
             missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
@@ -92,16 +29,9 @@ class ChatBot:
             chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
             return "", chatbot, None
 
-        # Option 1: Automatically create the directory if it doesn't exist.
-        # (Be aware: creating the directory means the vector store may be empty,
-        # so similarity_search might return no results.)
         if not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
-            # Optionally, you could decide to return an error here:
-            # chatbot.append((message, missing_error))
-            # return "", chatbot, None
 
-        # Instantiate the vector store (Chroma)
         vectordb = Chroma(persist_directory=directory,
                         embedding_function=APPCFG.embedding_model)
 
@@ -112,7 +42,6 @@ class ChatBot:
 
         print("Documents found:", docs)
         
-        # Construct the prompt using the retrieved documents
         question = "# User new question:\n" + message
         retrieved_content = ChatBot.clean_references(docs)
         chat_history = f"Chat history:\n {str(chatbot[-APPCFG.number_of_q_a_pairs:])}\n\n"
@@ -121,7 +50,6 @@ class ChatBot:
         print("========================")
         print(prompt)
         
-        # Call the OpenAI API for completion
         response = openai.ChatCompletion.create(
             messages=[
                 {"role": "system", "content": APPCFG.llm_system_role},

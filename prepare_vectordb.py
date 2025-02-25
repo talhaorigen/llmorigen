@@ -38,8 +38,8 @@ class PrepareVectorDB:
             embedding_function=self.embedding,
             persist_directory=self.persist_directory
         )
-        vectordb.delete_collection()  # This deletes all data inside the collection
-        vectordb.persist()  # Save changes
+        vectordb.delete_collection() 
+        vectordb.persist()  
         print("Vector database cleared successfully.")
     
     def __load_all_documents(self) -> List:
