@@ -31,11 +31,12 @@ with app.app_context():
 u1= User(email= 'ahmad.i@origen.qa',password= "ahmad@123", full_name= 'Ahmad Intisar', contact = "+923048852145")
 u2= User(email= 'talha.j@origen.qa',password= "talha@123", full_name= 'Talha Javed', contact = "+923337420315")
 u3= User(email= 'ali.s@origen.co',password= "ali@123", full_name= 'Ali Saeed', contact = "+1 5145625713")
+u4= User(email= 'abdulaziz.a@origen.qa',password= "aziz@456", full_name= 'Abdul Aziz', contact = "+1 5145625713")
 
 
 with app.app_context():
     db.session.execute(text('DELETE FROM user'))  
-    db.session.add_all([u1,u2, u3])
+    db.session.add_all([u1,u2, u3, u4])
     db.session.commit()
 
 # Home Route
