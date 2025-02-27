@@ -64,3 +64,6 @@ coverage.xml
 
 # Pytest cache
 .pytest_cache/
+data/
+C:/
+uploads/
