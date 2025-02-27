@@ -49,7 +49,7 @@ def home():
 # Disabled Signup Route
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    flash("Request an account from the Origin Account Manager", "danger")
+    flash("Request an account from the Origen Account Manager", "danger")
     return redirect(url_for('signin'))
 
 # Signin Route
