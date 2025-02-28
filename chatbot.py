@@ -9,7 +9,6 @@ import ast
 import html
 from load_config import LoadConfig
 from flask import session
-
 APPCFG = LoadConfig()
 
 
@@ -17,28 +16,34 @@ class ChatBot:
 
 
     @staticmethod
-    def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0, session_id: str = "default") -> Tuple:
-        """
-        Generate a response to a user query using document retrieval and language model completion.
-        """
+    def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0) -> Tuple:
+    # 1. Determine which directory to use
         if data_type == "Preprocessed doc":
-            directory = APPCFG.persist_directory
-            missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
+            base_directory = APPCFG.persist_directory
         elif data_type == "Process for RAG":
-            # Ensure each user gets a unique directory
-            directory = os.path.join(APPCFG.custom_persist_directory, session_id)
+            base_directory = APPCFG.custom_persist_directory
         else:
-            chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
+            chatbot.append((message, "Welcome to Origen Bot. No file was uploaded."))
             return "", chatbot, None
 
-        # Create the user-specific directory if it doesn't exist
-        if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
+        # 2. Identify the current user
+        user_email = session.get('user', None)
+        if not user_email:
+            chatbot.append((message, "No user session found!"))
+            return "", chatbot, None
 
-        # Initialize the vector database for the user's session
-        vectordb = Chroma(persist_directory=directory, embedding_function=APPCFG.embedding_model)
+        # 3. Build a user-specific subfolder
+        user_vectordb_path = os.path.join(base_directory, user_email)
+        if not os.path.exists(user_vectordb_path):
+            os.makedirs(user_vectordb_path, exist_ok=True)
 
-        # Perform similarity search
+        # 4. Create or load that user's vectordb
+        vectordb = Chroma(
+            persist_directory=user_vectordb_path,
+            embedding_function=APPCFG.embedding_model
+        )
+
+        # 5. Now do the similarity_search, etc.
         docs = vectordb.similarity_search(message, k=APPCFG.k)
         if not docs:
             chatbot.append((message, "No relevant documents found in the vector store."))
@@ -67,7 +72,6 @@ class ChatBot:
         time.sleep(10)
         
         return "", chatbot, retrieved_content
-
 
     @staticmethod
     def clean_references(documents: List) -> str:
