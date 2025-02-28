@@ -17,32 +17,28 @@ class ChatBot:
 
 
     @staticmethod
-    def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0) -> Tuple:
+    def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0, session_id: str = "default") -> Tuple:
         """
         Generate a response to a user query using document retrieval and language model completion.
         """
-
-        user_directory = os.path.join(APPCFG.custom_persist_directory, session.get('user', 'default'))
-        if not os.path.exists(user_directory):
-            os.makedirs(user_directory, exist_ok=True)
-
-        #directory = user_directory
-
         if data_type == "Preprocessed doc":
             directory = APPCFG.persist_directory
             missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
         elif data_type == "Process for RAG":
-            directory = user_directory
+            # Ensure each user gets a unique directory
+            directory = os.path.join(APPCFG.custom_persist_directory, session_id)
         else:
             chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
             return "", chatbot, None
 
-        if not os.path.exists(user_directory):
-            os.makedirs(user_directory, exist_ok=True)
+        # Create the user-specific directory if it doesn't exist
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
 
-        vectordb = Chroma(persist_directory=user_directory,
-                        embedding_function=APPCFG.embedding_model)
+        # Initialize the vector database for the user's session
+        vectordb = Chroma(persist_directory=directory, embedding_function=APPCFG.embedding_model)
 
+        # Perform similarity search
         docs = vectordb.similarity_search(message, k=APPCFG.k)
         if not docs:
             chatbot.append((message, "No relevant documents found in the vector store."))
@@ -71,6 +67,7 @@ class ChatBot:
         time.sleep(10)
         
         return "", chatbot, retrieved_content
+
 
     @staticmethod
     def clean_references(documents: List) -> str:

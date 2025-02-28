@@ -7,6 +7,7 @@ from chatbot import APPCFG, ChatBot
 from prepare_vectordb import PrepareVectorDB
 from upload_file import UploadFile
 from werkzeug.utils import secure_filename
+import uuid
 
 app = Flask(__name__)
 app.secret_key = '83930bHKHKLJE_-wnreknwi43hnwkj4888'
@@ -69,6 +70,7 @@ def signin():
             return redirect(url_for('signin'))
 
         session['user'] = email
+        session['session_id'] = str(uuid.uuid4())
         flash("Logged in successfully!", "success")
         return redirect(url_for('chat'))
     return render_template('signin.html')
@@ -104,9 +106,7 @@ def chatbot_response():
         return jsonify({"error": "Message cannot be empty"}), 400
     
     chatbot_history = []  # Placeholder for user-specific history
-    _, updated_chat, references = ChatBot.respond(chatbot_history, user_input, data_type, temperature)
-
-    session['chat_history'] = updated_chat
+    _, updated_chat, references = ChatBot.respond(chatbot_history, user_input, data_type, temperature, session.get('session_id', 'default'))
 
     return jsonify({"response": updated_chat[-1][1], "references": references})
 
@@ -134,9 +134,7 @@ def upload_files():
     os.makedirs(upload_folder, exist_ok=True)  # Recreate the directory
 
     uploaded_files = []
-    if 'chat_history' not in session:
-        session['chat_history'] = []
-    chatbot_history = session['chat_history'] # Placeholder for user-specific history
+    chatbot_history = []  # Placeholder for user-specific history
 
     for file in files:
         if file and file.filename:
@@ -160,10 +158,9 @@ def clear_cache():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
-    user_persist_directory = os.path.join(APPCFG.custom_persist_directory, session['user'])
     prepare_vectordb_instance = PrepareVectorDB(
         data_directory=[],
-        persist_directory=user_persist_directory,
+        persist_directory=APPCFG.custom_persist_directory,
         embedding_model_engine=APPCFG.embedding_model_engine,
         chunk_size=APPCFG.chunk_size,
         chunk_overlap=APPCFG.chunk_overlap
