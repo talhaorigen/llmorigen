@@ -7,7 +7,6 @@ from chatbot import APPCFG, ChatBot
 from prepare_vectordb import PrepareVectorDB
 from upload_file import UploadFile
 from werkzeug.utils import secure_filename
-import uuid
 
 app = Flask(__name__)
 app.secret_key = '83930bHKHKLJE_-wnreknwi43hnwkj4888'
@@ -70,7 +69,6 @@ def signin():
             return redirect(url_for('signin'))
 
         session['user'] = email
-        session['session_id'] = str(uuid.uuid4())
         flash("Logged in successfully!", "success")
         return redirect(url_for('chat'))
     return render_template('signin.html')
@@ -96,77 +94,22 @@ def chatbot_response():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
-    user_email = session['user']
-    # Get the user's existing chat history from session, or empty
-    user_chat_history = session.get(f'chatbot_history_{user_email}', [])
-
     data = request.json
     user_input = data.get("message", "")
-    data_type = data.get("data_type", "Process for RAG")
-    temperature = float(data.get("temperature", 0.0))
+    data_type = data.get("data_type", "Process for RAG")  # Default data type
+    print("Data type:" , data_type)
+    temperature = float(data.get("temperature", 0.0))  # Default temperature
 
     if not user_input:
         return jsonify({"error": "Message cannot be empty"}), 400
+    
+    chatbot_history = []  # Placeholder for user-specific history
+    _, updated_chat, references = ChatBot.respond(chatbot_history, user_input, data_type, temperature)
 
-    # Pass that user_chat_history to the ChatBot
-    _, updated_chat, references = ChatBot.respond(
-        user_chat_history,
-        user_input,
-        data_type,
-        temperature
-    )
-
-    # Store updated history back in session
-    session[f'chatbot_history_{user_email}'] = updated_chat
-
-    return jsonify({
-        "response": updated_chat[-1][1],
-        "references": references
-    })
-
+    return jsonify({"response": updated_chat[-1][1], "references": references})
 
 # 📌 API Endpoint for File Upload and Processing
 import shutil
-
-# @app.route('/upload', methods=['POST'])
-# def upload_files():
-#     if 'user' not in session:
-#         return jsonify({"error": "Unauthorized"}), 401
-#     if 'files[]' not in request.files:
-#         return jsonify({"error": "No files provided"}), 400
-
-#     files = request.files.getlist('files[]')  # Get all uploaded files
-#     data_type = request.form.get('data_type', "Process for RAG")
-#     temperature = request.form.get('temperature', 0.0)
-
-#     if not files or all(file.filename == '' for file in files):
-#         return jsonify({"error": "No valid files selected"}), 400
-
-#     # Clear the upload folder before saving new files
-#     upload_folder = app.config['UPLOAD_FOLDER']
-#     if os.path.exists(upload_folder):
-#         shutil.rmtree(upload_folder)  # Remove the directory and its contents
-#     os.makedirs(upload_folder, exist_ok=True)  # Recreate the directory
-
-#     uploaded_files = []
-#     chatbot_history = []  # Placeholder for user-specific history
-
-#     for file in files:
-#         if file and file.filename:
-#             filename = secure_filename(file.filename)
-#             file_path = os.path.join(upload_folder, filename)
-#             file.save(file_path)
-#             uploaded_files.append(file_path)
-
-#     # Process all uploaded files at once
-#     _, updated_chat = UploadFile.process_uploaded_files(uploaded_files, chatbot_history, data_type)
-
-#     return jsonify({
-#         "message": "Files uploaded successfully!",
-#         "chatbot_responses": [chat[1] for chat in updated_chat]  # Collect all responses
-#     })
-
-from flask import session
 
 @app.route('/upload', methods=['POST'])
 def upload_files():
@@ -175,43 +118,37 @@ def upload_files():
     if 'files[]' not in request.files:
         return jsonify({"error": "No files provided"}), 400
 
-    # Identify the user
-    user_email = session['user']
-    # Create a user-specific folder inside 'uploads'
-    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], user_email)
-
-    # Clear out any previous files for that user
-    if os.path.exists(user_folder):
-        shutil.rmtree(user_folder)
-    os.makedirs(user_folder, exist_ok=True)
-
-    files = request.files.getlist('files[]')
+    files = request.files.getlist('files[]')  # Get all uploaded files
     data_type = request.form.get('data_type', "Process for RAG")
     temperature = request.form.get('temperature', 0.0)
 
     if not files or all(file.filename == '' for file in files):
         return jsonify({"error": "No valid files selected"}), 400
 
-    uploaded_files = []
-    chatbot_history = []  # or however you handle chat history
+    # Clear the upload folder before saving new files
+    upload_folder = app.config['UPLOAD_FOLDER']
+    if os.path.exists(upload_folder):
+        shutil.rmtree(upload_folder)  # Remove the directory and its contents
+    os.makedirs(upload_folder, exist_ok=True)  # Recreate the directory
 
-    # Save each file in the user's folder
+    uploaded_files = []
+    chatbot_history = []  # Placeholder for user-specific history
+
     for file in files:
         if file and file.filename:
             filename = secure_filename(file.filename)
-            file_path = os.path.join(user_folder, filename)
+            file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
             uploaded_files.append(file_path)
 
-    # Process the user's uploaded files
-    _, updated_chat = UploadFile.process_uploaded_files(
-        uploaded_files, chatbot_history, data_type
-    )
+    # Process all uploaded files at once
+    _, updated_chat = UploadFile.process_uploaded_files(uploaded_files, chatbot_history, data_type)
 
     return jsonify({
         "message": "Files uploaded successfully!",
-        "chatbot_responses": [chat[1] for chat in updated_chat]
+        "chatbot_responses": [chat[1] for chat in updated_chat]  # Collect all responses
     })
+
 
 # 📌 API Endpoint for Clearing Cache
 @app.route('/clear_cache', methods=['POST'])

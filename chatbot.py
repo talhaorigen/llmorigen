@@ -8,7 +8,7 @@ import re
 import ast
 import html
 from load_config import LoadConfig
-from flask import session
+
 APPCFG = LoadConfig()
 
 
@@ -17,33 +17,24 @@ class ChatBot:
 
     @staticmethod
     def respond(chatbot: List, message: str, data_type: str = "Process for RAG", temperature: float = 0.0) -> Tuple:
-    # 1. Determine which directory to use
+        """
+        Generate a response to a user query using document retrieval and language model completion.
+        """
         if data_type == "Preprocessed doc":
-            base_directory = APPCFG.persist_directory
+            directory = APPCFG.persist_directory
+            missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
         elif data_type == "Process for RAG":
-            base_directory = APPCFG.custom_persist_directory
+            directory = APPCFG.custom_persist_directory
         else:
-            chatbot.append((message, "Welcome to Origen Bot. No file was uploaded."))
+            chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
             return "", chatbot, None
 
-        # 2. Identify the current user
-        user_email = session.get('user', None)
-        if not user_email:
-            chatbot.append((message, "No user session found!"))
-            return "", chatbot, None
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
 
-        # 3. Build a user-specific subfolder
-        user_vectordb_path = os.path.join(base_directory, user_email)
-        if not os.path.exists(user_vectordb_path):
-            os.makedirs(user_vectordb_path, exist_ok=True)
+        vectordb = Chroma(persist_directory=directory,
+                        embedding_function=APPCFG.embedding_model)
 
-        # 4. Create or load that user's vectordb
-        vectordb = Chroma(
-            persist_directory=user_vectordb_path,
-            embedding_function=APPCFG.embedding_model
-        )
-
-        # 5. Now do the similarity_search, etc.
         docs = vectordb.similarity_search(message, k=APPCFG.k)
         if not docs:
             chatbot.append((message, "No relevant documents found in the vector store."))
