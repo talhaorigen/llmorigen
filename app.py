@@ -106,6 +106,8 @@ def chatbot_response():
     chatbot_history = []  # Placeholder for user-specific history
     _, updated_chat, references = ChatBot.respond(chatbot_history, user_input, data_type, temperature)
 
+    session['chat_history'] = updated_chat
+
     return jsonify({"response": updated_chat[-1][1], "references": references})
 
 # 📌 API Endpoint for File Upload and Processing
@@ -132,7 +134,9 @@ def upload_files():
     os.makedirs(upload_folder, exist_ok=True)  # Recreate the directory
 
     uploaded_files = []
-    chatbot_history = []  # Placeholder for user-specific history
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+    chatbot_history = session['chat_history'] # Placeholder for user-specific history
 
     for file in files:
         if file and file.filename:
@@ -156,9 +160,10 @@ def clear_cache():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
+    user_persist_directory = os.path.join(APPCFG.custom_persist_directory, session['user'])
     prepare_vectordb_instance = PrepareVectorDB(
         data_directory=[],
-        persist_directory=APPCFG.custom_persist_directory,
+        persist_directory=user_persist_directory,
         embedding_model_engine=APPCFG.embedding_model_engine,
         chunk_size=APPCFG.chunk_size,
         chunk_overlap=APPCFG.chunk_overlap

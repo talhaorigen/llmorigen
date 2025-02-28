@@ -8,6 +8,7 @@ import re
 import ast
 import html
 from load_config import LoadConfig
+from flask import session
 
 APPCFG = LoadConfig()
 
@@ -20,19 +21,26 @@ class ChatBot:
         """
         Generate a response to a user query using document retrieval and language model completion.
         """
+
+        user_directory = os.path.join(APPCFG.custom_persist_directory, session.get('user', 'default'))
+        if not os.path.exists(user_directory):
+            os.makedirs(user_directory, exist_ok=True)
+
+        #directory = user_directory
+
         if data_type == "Preprocessed doc":
             directory = APPCFG.persist_directory
             missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
         elif data_type == "Process for RAG":
-            directory = APPCFG.custom_persist_directory
+            directory = user_directory
         else:
             chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
             return "", chatbot, None
 
-        if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
+        if not os.path.exists(user_directory):
+            os.makedirs(user_directory, exist_ok=True)
 
-        vectordb = Chroma(persist_directory=directory,
+        vectordb = Chroma(persist_directory=user_directory,
                         embedding_function=APPCFG.embedding_model)
 
         docs = vectordb.similarity_search(message, k=APPCFG.k)
