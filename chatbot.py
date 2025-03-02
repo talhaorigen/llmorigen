@@ -1,5 +1,6 @@
 
 import time
+from flask import session
 import openai
 import os
 from langchain.vectorstores import Chroma
@@ -22,21 +23,25 @@ class ChatBot:
         """
         if data_type == "Preprocessed doc":
             directory = APPCFG.persist_directory
-            missing_error = "VectorDB does not exist. Please first execute the 'upload_data_manually.py' module."
         elif data_type == "Process for RAG":
-            directory = APPCFG.custom_persist_directory
+            # Correct directory without extra 'chroma' in the path
+            user_id = session.get('user')
+            directory = os.path.join(APPCFG.custom_persist_directory, user_id)
+            print(f"Using directory for vector database: {directory}")
         else:
             chatbot.append((message, "Welcome to Origen Bot. No file was uploaded. Please first upload your files using the 'upload' button."))
             return "", chatbot, None
 
         if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
+            print(f"Directory not found: {directory}")
+            chatbot.append((message, "No relevant documents found in the vector store."))
+            return "", chatbot, None
 
-        vectordb = Chroma(persist_directory=directory,
-                        embedding_function=APPCFG.embedding_model)
+        vectordb = Chroma(persist_directory=directory, embedding_function=APPCFG.embedding_model)
 
         docs = vectordb.similarity_search(message, k=APPCFG.k)
         if not docs:
+            print(f"No documents found in vector store at: {directory}")
             chatbot.append((message, "No relevant documents found in the vector store."))
             return "", chatbot, None
 
@@ -46,9 +51,6 @@ class ChatBot:
         retrieved_content = ChatBot.clean_references(docs)
         chat_history = f"Chat history:\n {str(chatbot[-APPCFG.number_of_q_a_pairs:])}\n\n"
         prompt = f"{chat_history}{retrieved_content}{question}"
-        
-        print("========================")
-        print(prompt)
         
         response = openai.ChatCompletion.create(
             messages=[
@@ -60,9 +62,9 @@ class ChatBot:
         )
         
         chatbot.append((message, response["choices"][0]["message"]["content"]))
-        time.sleep(10)
         
         return "", chatbot, retrieved_content
+
 
     @staticmethod
     def clean_references(documents: List) -> str:

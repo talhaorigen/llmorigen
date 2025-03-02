@@ -6,7 +6,7 @@ directories:
   data_directory: C:/Users/MSI/OrigenUI/llmorigen/data/docs
   data_directory_2: C:/Users/MSI/OrigenUI/llmorigen/data/docs_2
   persist_directory: C:/Users/MSI/OrigenUI/llmorigen/data/vectordb/processed/chroma
-  custom_persist_directory: data/vectordb/uploaded/chroma/
+  custom_persist_directory: data/vectordb/uploaded/
 
 embedding_model_config:
   engine: "text-embedding-ada-002"

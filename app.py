@@ -141,31 +141,38 @@ def upload_files():
             file.save(file_path)
             uploaded_files.append(file_path)
 
-    # Process all uploaded files at once
-    _, updated_chat = UploadFile.process_uploaded_files(uploaded_files, chatbot_history, data_type)
+    # Use session-specific directory for vector database
+    user_directory = os.path.join(APPCFG.custom_persist_directory, session['user'])
+    os.makedirs(user_directory, exist_ok=True)
+    print(f"Files are being saved to: {user_directory}")
+
+    # Process all uploaded files with session-specific directory
+    _, updated_chat = UploadFile.process_uploaded_files(uploaded_files, chatbot_history, data_type, user_directory)
 
     return jsonify({
         "message": "Files uploaded successfully!",
         "chatbot_responses": [chat[1] for chat in updated_chat]  # Collect all responses
     })
 
-
-# 📌 API Endpoint for Clearing Cache
+# 📌 API Endpoint for File Upload and Processing
 @app.route('/clear_cache', methods=['POST'])
 def clear_cache():
     if 'user' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
+    # Use session-specific directory for clearing the vector database
+    user_directory = os.path.join(APPCFG.custom_persist_directory, session['user'])
+    print(f"Clearing cache for directory: {user_directory}")
+
     prepare_vectordb_instance = PrepareVectorDB(
         data_directory=[],
-        persist_directory=APPCFG.custom_persist_directory,
+        persist_directory=user_directory,
         embedding_model_engine=APPCFG.embedding_model_engine,
         chunk_size=APPCFG.chunk_size,
         chunk_overlap=APPCFG.chunk_overlap
     )
     prepare_vectordb_instance.clear_vectordb()
     return jsonify({"message": "Vector database cleared successfully."})
-
 
 # 📌 API Endpoint for Fetching Available Processing Options
 @app.route('/options', methods=['GET'])
