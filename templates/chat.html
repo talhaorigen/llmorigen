@@ -593,13 +593,32 @@
         .then((response) => response.json())
         .then((data) => {
           reasoningMessage.remove();
-          const botMessage = `<div class="p-2 bg-gray-300 rounded-lg my-2"><strong>Bot:</strong> ${data.response}</div>`;
+          const botMessage = `
+                <div class="p-2 bg-gray-300 rounded-lg my-2">
+                    <strong>Bot:</strong>
+                    <div>${convertToHTML(data.response)}</div>
+                </div>`;
           chatOutput.innerHTML += botMessage;
 
           chatOutput.scrollTop = chatOutput.scrollHeight;
           addReferences(data.references)
         })
         .catch((error) => console.error("Error:", error));
+    }
+    
+    function convertToHTML(text) {
+    // Convert **bold** to <strong>
+    text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    
+    // Convert bullet points (- or *) to <ul><li> format, allowing multi-line bullet lists
+    text = text.replace(/(?:^|\n)- (.*?)(?=\n|$)/g, "<li>$1</li>");
+    
+    // Wrap the <li> elements with <ul> if there are bullet points
+    if (text.includes("<li>")) {
+        text = `<ul style="list-style-type: disc; padding-left: 20px;">${text}</ul>`;
+    }
+
+    return text;
     }
 
     function uploadFiles() {
