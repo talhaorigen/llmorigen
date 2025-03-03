@@ -201,7 +201,8 @@ def clear_cache():
         chunk_overlap=APPCFG.chunk_overlap
     )
     prepare_vectordb_instance.clear_vectordb()
-    return jsonify({"message": "Vector database cleared successfully."})
+    chatbot_history = session.pop('chatbot_history', [])
+    return jsonify({"message": "Vector database and chat history cleared successfully."})
 
 # 📌 API Endpoint for Fetching Available Processing Options
 @app.route('/options', methods=['GET'])
