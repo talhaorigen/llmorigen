@@ -62,7 +62,7 @@ serve:
   port: 8000
 
 memory:
-  number_of_q_a_pairs: 5
+  number_of_q_a_pairs: 10
 
 
   

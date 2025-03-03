@@ -49,8 +49,10 @@ class ChatBot:
         
         question = "# User new question:\n" + message
         retrieved_content = ChatBot.clean_references(docs)
-        chat_history = f"Chat history:\n {str(chatbot[-APPCFG.number_of_q_a_pairs:])}\n\n"
-        prompt = f"{chat_history}{retrieved_content}{question}"
+        chat_history = "\n".join([f"[{q}, {a}]" for q, a in chatbot[-APPCFG.number_of_q_a_pairs:]])
+        chat_history_formatted = f"# Chat history:\n{chat_history}\n\n"
+        print("Chat History:", chat_history_formatted)
+        prompt = f"{chat_history_formatted}{retrieved_content}{question}"
         
         response = openai.ChatCompletion.create(
             messages=[
