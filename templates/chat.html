@@ -114,6 +114,32 @@
       transition: left 0.2s ease-in-out;
       /* Smooth number movement */
     }
+    .loader {
+      display: inline-flex;
+      gap: 4px; 
+    }
+    
+    .loader span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: black;
+      animation: bounce 1.5s infinite;
+    }
+    
+    .loader span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .loader span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes bounce {
+      0% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-5px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 0.3; }
+    }
   </style>
 </head>
 
@@ -549,7 +575,7 @@
 
       const reasoningMessage = document.createElement("div");
       reasoningMessage.className = "p-2 bg-gray-300 rounded-lg my-2 font-bold";
-      reasoningMessage.innerText = "Reasoning...";
+      reasoningMessage.innerHTML = `Reasoning <div class="loader"><span></span><span></span><span></span></div>`;
       chatOutput.appendChild(reasoningMessage);
 
 
@@ -588,7 +614,7 @@
 
       const uploadMessage = document.createElement("div");
       uploadMessage.className = "p-2 bg-gray-300 rounded-lg my-2 font-bold";
-      uploadMessage.innerText = "Processing Files...";
+      uploadMessage.innerHTML = `Processing Files <div class="loader"><span></span><span></span><span></span></div>`;
       chatOutput.appendChild(uploadMessage);
 
 
